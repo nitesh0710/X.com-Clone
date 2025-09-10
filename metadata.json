@@ -1,0 +1,5 @@
+{
+  "name": "Copy of X.com Clone",
+  "description": "A fully functional replica of the X.com (formerly Twitter) user interface, built with React, TypeScript, and Tailwind CSS. It features a dynamic feed, posting capabilities with AI-powered suggestions from Gemini, and interactive UI elements.",
+  "requestFramePermissions": []
+}
