@@ -1,0 +1,153 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { LEAD_STATUSES } from '@/lib/schema';
+---
+
+<AdminLayout title="Leads | Speed Agency admin">
+  <h1 class="h2">Leads</h1>
+  <p class="muted mt-4">Protected by Cloudflare Access. Changes save immediately.</p>
+  <div class="actions" style="margin-top:var(--s-5)">
+    <label class="field" style="min-width:200px">
+      <span>Filter by status</span>
+      <select class="input" id="filter">
+        <option value="">All</option>
+        {LEAD_STATUSES.map((s) => <option value={s}>{s}</option>)}
+      </select>
+    </label>
+    <a class="btn btn-secondary" id="csv" href="/api/admin/leads?format=csv" download>Export CSV</a>
+  </div>
+  <p id="msg" class="notice mt-5" role="status" hidden></p>
+  <div style="overflow-x:auto" class="mt-6">
+    <table class="table admin-table">
+      <thead>
+        <tr>
+          <th scope="col">Received</th>
+          <th scope="col">Contact</th>
+          <th scope="col">Business</th>
+          <th scope="col">Need / details</th>
+          <th scope="col">Status</th>
+          <th scope="col">Notes</th>
+        </tr>
+      </thead>
+      <tbody id="rows"><tr><td colspan="6">Loading…</td></tr></tbody>
+    </table>
+  </div>
+  <template id="status-options">{LEAD_STATUSES.map((s) => <option value={s}>{s}</option>)}</template>
+</AdminLayout>
+
+<style>
+  .admin-table {
+    font-size: 15px;
+    min-width: 980px;
+  }
+  .admin-table textarea {
+    min-height: 72px;
+    font-size: 15px;
+  }
+  @media (max-width: 767px) {
+    .admin-table {
+      min-width: 0;
+    }
+  }
+</style>
+
+<script>
+  type Lead = Record<string, string | number | null>;
+  const rows = document.getElementById('rows')!;
+  const filter = document.getElementById('filter') as HTMLSelectElement;
+  const csv = document.getElementById('csv') as HTMLAnchorElement;
+  const msg = document.getElementById('msg')!;
+  const optionsTpl = document.getElementById('status-options') as HTMLTemplateElement;
+
+  const say = (text: string) => {
+    msg.textContent = text;
+    msg.hidden = false;
+  };
+  const el = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string) => {
+    const e = document.createElement(tag);
+    if (text != null) e.textContent = text;
+    return e;
+  };
+  const line = (label: string, v: unknown) => (v ? `${label}: ${v}` : '');
+
+  async function patch(id: string, body: Record<string, string>) {
+    const res = await fetch(`/api/admin/leads/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    say(res.ok ? 'Saved.' : `Couldn't save (${res.status}).`);
+  }
+
+  async function load() {
+    const q = filter.value ? `?status=${encodeURIComponent(filter.value)}` : '';
+    csv.href = `/api/admin/leads?format=csv${filter.value ? `&status=${encodeURIComponent(filter.value)}` : ''}`;
+    const res = await fetch(`/api/admin/leads${q}`);
+    if (!res.ok) {
+      rows.replaceChildren();
+      say(`Couldn't load leads (${res.status}). Are you signed in through Cloudflare Access?`);
+      return;
+    }
+    const { leads } = (await res.json()) as { leads: Lead[] };
+    rows.replaceChildren();
+    if (!leads.length) {
+      const tr = el('tr');
+      const td = el('td', 'No leads yet.');
+      td.colSpan = 6;
+      tr.append(td);
+      rows.append(tr);
+      return;
+    }
+    for (const l of leads) {
+      const id = String(l.id);
+      const tr = el('tr');
+      const received = el('td');
+      received.append(el('div', new Date(String(l.created_at)).toLocaleString()), el('div', String(l.form_type)));
+      const contact = el('td');
+      const a = el('a', String(l.email));
+      a.href = `mailto:${l.email}`;
+      a.className = 'link';
+      contact.append(el('strong', String(l.name)), el('br'), a);
+      if (l.phone) contact.append(el('br'), el('span', String(l.phone)));
+      const biz = el('td');
+      biz.append(el('div', String(l.business_name ?? '')), el('div', String(l.town_state ?? '')));
+      const need = el('td');
+      const details = [
+        line('Need', l.need),
+        line('Trade', l.trade),
+        line('Site', l.website_url),
+        line('Timeline', l.timeline),
+        line('Budget', l.budget),
+        line('Source', l.source_page),
+        line('Campaign', [l.utm_source, l.utm_medium, l.utm_campaign].filter(Boolean).join(' / ')),
+        line('Tips consent', l.marketing_consent ? 'yes' : ''),
+        line('Message', l.message),
+      ].filter(Boolean);
+      for (const d of details) need.append(el('div', d));
+      const st = el('td');
+      const sel = el('select');
+      sel.className = 'input';
+      sel.setAttribute('aria-label', `Status for ${l.name}`);
+      sel.append(optionsTpl.content.cloneNode(true));
+      sel.value = String(l.status);
+      sel.addEventListener('change', () => patch(id, { status: sel.value }));
+      st.append(sel);
+      const notes = el('td');
+      const ta = el('textarea');
+      ta.className = 'input';
+      ta.value = String(l.notes ?? '');
+      ta.setAttribute('aria-label', `Notes for ${l.name}`);
+      ta.maxLength = 5000;
+      const save = el('button', 'Save notes');
+      save.type = 'button';
+      save.className = 'btn btn-secondary';
+      save.style.marginTop = '6px';
+      save.addEventListener('click', () => patch(id, { notes: ta.value }));
+      notes.append(ta, save);
+      tr.append(received, contact, biz, need, st, notes);
+      rows.append(tr);
+    }
+  }
+  filter.addEventListener('change', load);
+  load();
+</script>

@@ -1,0 +1,21 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+---
+
+<BaseLayout
+  title="Page Not Found | Speed Agency Websites for Trade Businesses"
+  description="That page doesn't exist or has moved. Head back to the homepage, see websites for trade businesses, or get in touch and I'll point you the right way."
+  noindex
+>
+  <section class="page-hero wrap" data-hero>
+    <span class="label">Error 404</span>
+    <h1>That page isn't here.</h1>
+    <p class="lede">It may have moved, or the link might be wrong. Try one of these:</p>
+    <ul class="ruled mt-6" role="list" style="max-width:520px">
+      <li><a href="/" class="text-link">Home <Icon name="arrow-right" /></a></li>
+      <li><a href="/websites" class="text-link">Websites for trades <Icon name="arrow-right" /></a></li>
+      <li><a href="/contact" class="text-link">Contact <Icon name="arrow-right" /></a></li>
+    </ul>
+  </section>
+</BaseLayout>

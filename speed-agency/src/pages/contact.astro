@@ -1,0 +1,65 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import EnquiryForm from '@/components/EnquiryForm.astro';
+import Icon from '@/components/Icon.astro';
+import F from '@/components/F.astro';
+import { facts, hasFact, optional, telHref } from '@/config/site';
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Contact', href: '/contact' },
+];
+const phone = optional.US_PHONE.trim();
+---
+
+<BaseLayout
+  title="Contact Speed Agency: Tell Me About Your Trade Business"
+  description="Tell me about your trade business and what you need: a new website, a fix, Google profile help or a free video review. I reply within one business day."
+  crumbs={crumbs}
+  stickyBar={false}
+>
+  <section class="page-hero wrap" data-hero style="padding-bottom:var(--s-6)">
+    <span class="label">Contact</span>
+    <h1>Tell me about your business.</h1>
+    <p class="lede" data-intro-default>Fill in the form and I'll get back to you. I reply within one business day, usually sooner.</p>
+    <p class="lede" data-intro-review hidden>
+      Send me your business name and town. I'll record a 2-minute video showing how you look online and what I'd fix first.
+      Free.
+    </p>
+  </section>
+
+  <section class="section alt" style="padding-top:var(--s-6)">
+    <div class="wrap grid">
+      <div class="col-7">
+        <EnquiryForm allowBrief />
+      </div>
+      <div class="col-5" data-loc="contact_aside">
+        <div class="panel stack">
+          <p class="label">Other ways to reach me</p>
+          <p style="display:flex;gap:8px;align-items:center">
+            <Icon name="mail" />
+            {hasFact('CONTACT_EMAIL') ? <a class="link" href={`mailto:${facts.CONTACT_EMAIL}`} data-cta="contact_email">{facts.CONTACT_EMAIL}</a> : <F k="CONTACT_EMAIL" />}
+          </p>
+          {
+            phone && (
+              <p style="display:flex;gap:8px;align-items:center">
+                <Icon name="phone" />
+                <a class="link" href={telHref(phone)} data-cta="contact_call">{phone}</a>
+              </p>
+            )
+          }
+          <p style="display:flex;gap:8px;align-items:center"><Icon name="clock" /> I reply within one business day, usually sooner.</p>
+          <p style="display:flex;gap:8px;align-items:flex-start"><Icon name="map-pin" /> <span><F k="LOCATION_STATEMENT" /></span></p>
+          <a href="/book" class="btn btn-secondary btn-block" data-cta="contact_book">Or book a free 15-minute call</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  if (new URLSearchParams(location.search).get('topic') === 'review') {
+    document.querySelector<HTMLElement>('[data-intro-default]')!.hidden = true;
+    document.querySelector<HTMLElement>('[data-intro-review]')!.hidden = false;
+  }
+</script>

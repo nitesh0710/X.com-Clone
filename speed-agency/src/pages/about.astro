@@ -1,0 +1,68 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import F from '@/components/F.astro';
+import { facts, hasFact } from '@/config/site';
+import { personLd } from '@/lib/seo';
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'About', href: '/about' },
+];
+const bio = hasFact('FOUNDER_BIO') ? facts.FOUNDER_BIO.split(/\n\s*\n/) : null;
+const name = hasFact('FOUNDER_NAME') ? facts.FOUNDER_NAME : null;
+---
+
+<BaseLayout
+  title="About Speed Agency: One Founder, Websites for Trades"
+  description="Speed Agency is a one-person web studio building websites for US trade businesses. Meet the founder and see where I'm based and how payment and ownership work."
+  crumbs={crumbs}
+  jsonLd={[personLd()]}
+>
+  <section class="page-hero wrap" data-hero>
+    <div class="grid">
+      <div class="col-7">
+        <span class="label">About</span>
+        <h1>Hi, I'm <F k="FOUNDER_NAME" />.</h1>
+        <div class="prose mt-6">
+          {bio ? bio.map((p) => <p>{p}</p>) : <p><mark class="ph">{'{{FOUNDER_BIO}}'}</mark></p>}
+        </div>
+        <p class="mt-6 muted">
+          Speed Agency is a small web studio that builds websites for plumbers, electricians, HVAC techs, roofers and other
+          trade businesses. Every site is built to do one job: turn a local search into a phone call or a quote request. You
+          deal directly with me from first call to launch.
+        </p>
+        <p class="mt-4"><strong>Mission:</strong> Give every good local tradesperson a website that's as reliable as their work.</p>
+      </div>
+      <div class="col-5">
+        {
+          hasFact('FOUNDER_PHOTO') ? (
+            <img src={facts.FOUNDER_PHOTO} alt={name ?? 'Founder'} width="480" height="560" loading="eager" style="width:100%;aspect-ratio:6/7;object-fit:cover;border:1.5px solid var(--ink)" />
+          ) : (
+            <div class="photo-ph" style="width:100%;aspect-ratio:6/7;font-size:16px" role="img" aria-label="Founder photo placeholder">{'{{FOUNDER_PHOTO}}'}</div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-5">
+        <SectionHead label="How Speed Agency works" />
+        <h2 class="sec-title">The practical bits.</h2>
+      </div>
+      <div class="col-7">
+        <ul class="ruled" role="list">
+          <li><strong>Where I'm based:</strong> <F k="LOCATION_STATEMENT" /></li>
+          <li><strong>How we talk:</strong> email, phone or video calls. I reply within one business day.</li>
+          <li><strong>What you own:</strong> your domain, your content and your site files.</li>
+          <li><strong>How you pay:</strong> <F k="PAYMENT_METHODS" /></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Talk to the person who'll build your site." cta="about_final_book" />
+</BaseLayout>

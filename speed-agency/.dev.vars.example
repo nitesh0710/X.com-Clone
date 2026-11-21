@@ -1,0 +1,22 @@
+# Copy to .dev.vars for local development (never commit .dev.vars).
+# In Cloudflare Pages, set these as encrypted secrets (Settings → Variables and Secrets).
+RESEND_API_KEY=re_xxx
+TURNSTILE_SECRET=
+OWNER_ALERT_EMAIL=you@example.com
+FROM_EMAIL="Speed Agency <hello@mail.speedagency.online>"
+REPLY_TO_EMAIL=hello@speedagency.online
+IP_HASH_SALT=change-me-to-a-long-random-string
+CAL_WEBHOOK_SECRET=change-me
+ACCESS_TEAM_DOMAIN=yourteam.cloudflareaccess.com
+ACCESS_AUD=your-access-application-aud-tag
+# Optional
+ALERT_WEBHOOK_URL=
+CRM_WEBHOOK_URL=
+SENTRY_DSN=
+# Local development only — never set in production:
+ALLOW_NO_TURNSTILE=1
+ALLOW_ADMIN_WITHOUT_ACCESS=1
+
+# Build-time public values (set as Pages *environment variables*, not secrets):
+# PUBLIC_TURNSTILE_SITEKEY=0x4AAAAAAA...
+# PUBLIC_CF_ANALYTICS_TOKEN=

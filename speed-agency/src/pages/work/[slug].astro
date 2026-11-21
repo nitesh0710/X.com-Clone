@@ -1,0 +1,105 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Icon from '@/components/Icon.astro';
+
+export async function getStaticPaths() {
+  const all = await getCollection('work');
+  return all.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const isClient = d.kind === 'client' && d.verified;
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Work', href: '/work' },
+  { name: d.title, href: `/work/${entry.id}` },
+];
+---
+
+<BaseLayout title={d.seoTitle} description={d.description} crumbs={crumbs} pageEvent={{ name: 'demo_view', label: entry.id }}>
+  <section class="page-hero wrap" data-hero>
+    <span class:list={['badge', { client: isClient }]} style="margin-bottom:var(--s-4)">
+      {isClient ? 'Client project' : 'Concept project — demonstration only'}
+    </span>
+    <span class="label">{d.trade}</span>
+    <h1>{d.title}</h1>
+    <p class="lede">{d.summary}</p>
+    {
+      d.placeholderKey && (
+        <p class="notice mt-5">
+          The screenshots below are placeholders until the concept site is supplied: <mark class="ph">{`{{${d.placeholderKey}}}`}</mark>
+        </p>
+      )
+    }
+    <div class="actions" data-loc="hero">
+      {
+        d.previewUrl && (
+          <a href={d.previewUrl} class="btn btn-secondary" target="_blank" rel="noopener" data-cta={`demo_${entry.id}_preview`}>
+            Open live preview <Icon name="external" />
+            <span class="sr-only">(opens in a new tab)</span>
+          </a>
+        )
+      }
+      <a href="/book" class="btn btn-primary" data-cta={`demo_${entry.id}_hero_book`}>Want one like this? Book a call</a>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap shots">
+      <div class="browser">
+        <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>Desktop view</span></div>
+        <Image src={d.screenshotDesktop} alt={`${d.screenshotAlt} Desktop view.`} widths={[640, 960, 1400]} sizes="(min-width: 1100px) 800px, 100vw" loading="eager" />
+      </div>
+      <div class="phone">
+        <Image src={d.screenshotMobile} alt={`${d.screenshotAlt} Mobile view.`} width={280} loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid">
+      <div class="col-7">
+        <SectionHead num="01" label="Objective" />
+        <p class="lede">{d.objective}</p>
+        <div class="prose mt-6"><Content /></div>
+      </div>
+      <div class="col-5">
+        <SectionHead num="02" label="Features" />
+        <ul class="checklist" role="list">{d.features.map((f) => <li><Icon name="check" /><span>{f}</span></li>)}</ul>
+        <SectionHead num="03" label="Technology, in plain words" />
+        <p>{d.technology}</p>
+        {
+          d.industry && (
+            <p class="mt-5">
+              <a href={`/websites/${d.industry}`} class="text-link">How I'd build this for your business <Icon name="arrow-right" /></a>
+            </p>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Want one like this for your business?" cta={`demo_${entry.id}_final_book`} />
+</BaseLayout>
+
+<style>
+  .shots {
+    display: grid;
+    gap: var(--s-6);
+    align-items: start;
+    justify-items: center;
+  }
+  .shots .browser {
+    width: 100%;
+  }
+  @media (min-width: 1100px) {
+    .shots {
+      grid-template-columns: 1fr auto;
+    }
+  }
+</style>

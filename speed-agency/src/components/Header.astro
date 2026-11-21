@@ -1,0 +1,118 @@
+---
+import Icon from './Icon.astro';
+import { services, primary } from '@/lib/nav';
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => path === href || path.startsWith(href + '/');
+const servicesCurrent = services.some((s) => isCurrent(s.href));
+---
+
+<header class="site-header" id="site-header">
+  <div class="wrap bar">
+    <a href="/" class="logo" aria-label="Speed Agency, home">
+      <span class="logo-mark" aria-hidden="true"></span>Speed Agency
+    </a>
+
+    <nav class="nav-desktop" aria-label="Main">
+      <ul class="nav-links">
+        <li>
+          <button
+            type="button"
+            class:list={[{ 'is-current': servicesCurrent }]}
+            aria-expanded="false"
+            aria-controls="services-menu"
+            data-dropdown
+          >
+            Services <Icon name="chevron-down" />
+          </button>
+          <ul class="dropdown" id="services-menu" hidden>
+            {
+              services.map((s) => (
+                <li>
+                  <a href={s.href} aria-current={isCurrent(s.href) ? 'page' : undefined}>
+                    {s.label}
+                    <span class="dd-sub">{s.sub}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </li>
+        {
+          primary.map((l) => (
+            <li>
+              <a href={l.href} aria-current={isCurrent(l.href) ? 'page' : undefined}>
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="/book" class="btn btn-primary" data-cta="header_book">Book a free call</a>
+    </nav>
+
+    <button type="button" class="menu-toggle" aria-haspopup="dialog" aria-controls="mobile-menu" data-menu-open>
+      <Icon name="menu" /> Menu
+    </button>
+  </div>
+</header>
+
+<dialog class="mobile-menu" id="mobile-menu" aria-label="Menu">
+  <div class="wrap bar">
+    <a href="/" class="logo"><span class="logo-mark" aria-hidden="true"></span>Speed Agency</a>
+    <button type="button" class="menu-toggle" data-menu-close>
+      <Icon name="x" /> Close
+    </button>
+  </div>
+  <nav class="wrap" aria-label="Mobile">
+    <p class="label mm-label">Services</p>
+    <ul>
+      {
+        services.map((s) => (
+          <li>
+            <a href={s.href} class="sub" aria-current={isCurrent(s.href) ? 'page' : undefined}>
+              {s.label}
+              <Icon name="arrow-right" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="label mm-label">Company</p>
+    <ul>
+      {
+        [...primary, { href: '/process', label: 'How it works' }, { href: '/faq', label: 'FAQ' }, { href: '/contact', label: 'Contact' }].map(
+          (l) => (
+            <li>
+              <a href={l.href} aria-current={isCurrent(l.href) ? 'page' : undefined}>
+                {l.label}
+                <Icon name="arrow-right" />
+              </a>
+            </li>
+          ),
+        )
+      }
+    </ul>
+    <div class="actions">
+      <a href="/book" class="btn btn-primary btn-block" data-cta="menu_book">Book a free call</a>
+    </div>
+  </nav>
+</dialog>
+
+<style>
+  dialog.mobile-menu {
+    max-width: none;
+    max-height: none;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    color: var(--ink);
+  }
+  dialog.mobile-menu:not([open]) {
+    display: none;
+  }
+  dialog.mobile-menu::backdrop {
+    background: var(--paper);
+  }
+</style>

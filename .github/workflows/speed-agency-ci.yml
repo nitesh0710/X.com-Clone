@@ -1,0 +1,42 @@
+name: Speed Agency CI
+
+on:
+  pull_request:
+    paths: ['speed-agency/**', '.github/workflows/speed-agency-ci.yml']
+  push:
+    branches: [main]
+    paths: ['speed-agency/**']
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: speed-agency
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: speed-agency/package-lock.json
+      - run: npm ci
+      - name: Audit (high severity, production deps)
+        run: npm audit --omit=dev --audit-level=high
+      - run: npm run typecheck
+      - run: npm run lint
+      - name: Build (includes SEO, proof, secrets and budget checks)
+        run: npm run build
+      - run: npm run check:links
+      - name: Lighthouse CI (mobile budgets)
+        run: npx --yes @lhci/cli@0.15.1 autorun
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: speed-agency/reports/lhci
+          retention-days: 30

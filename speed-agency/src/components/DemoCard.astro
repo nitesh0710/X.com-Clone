@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Icon from './Icon.astro';
+interface Props {
+  entry: CollectionEntry<'work'>;
+  headingLevel?: 'h2' | 'h3';
+  eager?: boolean;
+}
+const { entry, headingLevel = 'h3', eager = false } = Astro.props;
+const d = entry.data;
+const H = headingLevel;
+const isClient = d.kind === 'client' && d.verified;
+---
+
+<a href={`/work/${entry.id}`} class="demo-card">
+  <div class="browser">
+    <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>{d.trade.toLowerCase()}-concept.example</span></div>
+    <Image
+      src={d.screenshotDesktop}
+      alt={d.screenshotAlt}
+      widths={[480, 800, 1200]}
+      sizes="(min-width: 1100px) 640px, (min-width: 768px) 50vw, 100vw"
+      loading={eager ? 'eager' : 'lazy'}
+    />
+  </div>
+  <span class:list={['badge', { client: isClient }]}>
+    {isClient ? 'Client project' : 'Concept project — demonstration only'}
+  </span>
+  <p class="label muted">{d.trade}</p>
+  <H>{d.title}</H>
+  <p>{d.summary}</p>
+  {d.placeholderKey && <p class="small">Screenshot placeholder: <mark class="ph">{`{{${d.placeholderKey}}}`}</mark></p>}
+  <span class="text-link">View concept <Icon name="arrow-right" /></span>
+</a>

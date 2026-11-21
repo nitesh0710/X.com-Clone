@@ -1,0 +1,28 @@
+# 301s from removed/old URLs to the nearest new page.
+# Confirm this list against the old site's URLs before launch (see README → Redirects).
+# www → apex is a Cloudflare Redirect Rule (host-based), not this file.
+/index.html              /                 301
+/home                    /                 301
+/services                /websites         301
+/services/*              /websites         301
+/web-design              /websites         301
+/website-design          /websites         301
+/lead-generation         /websites         301
+/lead-gen                /websites         301
+/case-studies            /work             301
+/case-studies/*          /work             301
+/portfolio               /work             301
+/projects                /work             301
+/newsletter              /insights         301
+/blog                    /insights         301
+/blog/*                  /insights         301
+/contact-us              /contact          301
+/booking                 /book             301
+/schedule                /book             301
+/about-us                /about            301
+/ai-agents               /automation       301
+/automations             /automation       301
+/industries              /websites         301
+/privacy-policy          /privacy          301
+/terms-of-service        /terms            301
+/cookie-policy           /cookies          301

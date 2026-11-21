@@ -1,0 +1,14 @@
+---
+/**
+ * Renders an owner fact from src/config/site.ts, or a visible
+ * {{PLACEHOLDER}} when it hasn't been supplied yet.
+ */
+import { facts, type FactKey } from '@/config/site';
+interface Props {
+  k: FactKey;
+}
+const { k } = Astro.props;
+const v = facts[k]?.trim();
+---
+
+{v ? <Fragment set:text={v} /> : <mark class="ph">{`{{${k}}}`}</mark>}

@@ -1,0 +1,53 @@
+name: Speed Agency backup and retention
+
+# Weekly: encrypted D1 export kept as an artifact for 90 days, then data retention cleanup.
+# Needs repository secrets CLOUDFLARE_API_TOKEN (D1 edit), CLOUDFLARE_ACCOUNT_ID, BACKUP_PASSPHRASE
+# and the repository variable RETENTION_MONTHS (e.g. 24).
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: speed-agency
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: speed-agency/package-lock.json
+      - run: npm ci
+      - name: Export D1
+        run: npx wrangler d1 export speed-agency --remote --output backup.sql
+      - name: Encrypt
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          test -n "$BACKUP_PASSPHRASE" || { echo "BACKUP_PASSPHRASE secret is not set"; exit 1; }
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$BACKUP_PASSPHRASE" --symmetric --cipher-algo AES256 -o "backup-$(date -u +%F).sql.gpg" backup.sql
+          shred -u backup.sql
+      - uses: actions/upload-artifact@v4
+        with:
+          name: d1-backup-${{ github.run_id }}
+          path: speed-agency/backup-*.sql.gpg
+          retention-days: 90
+      - name: Data retention
+        env:
+          RETENTION_MONTHS: ${{ vars.RETENTION_MONTHS }}
+        run: |
+          test -n "$RETENTION_MONTHS" || { echo "Set the RETENTION_MONTHS repository variable"; exit 1; }
+          [[ "$RETENTION_MONTHS" =~ ^[0-9]+$ ]] || { echo "RETENTION_MONTHS must be a number"; exit 1; }
+          sed "s/__RETENTION_MONTHS__/$RETENTION_MONTHS/" scripts/sql/retention.sql > /tmp/retention.sql
+          npx wrangler d1 execute speed-agency --remote --file /tmp/retention.sql

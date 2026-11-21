@@ -1,0 +1,93 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Icon from '@/components/Icon.astro';
+import F from '@/components/F.astro';
+import { excluded } from '@/lib/offer';
+import type { FactKey } from '@/config/site';
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Pricing', href: '/pricing' },
+];
+type Row = { name: string; href?: string; who: string; includes: string; key: FactKey; from: boolean; suffix?: string; extra?: string };
+const rows: Row[] = [
+  { name: 'Starter website', href: '/websites', who: "No website, or one that's broken", includes: 'Up to 5 pages, copy written for you, tap-to-call, quote form, Google basics, 1 round of changes', key: 'PRICE_STARTER', from: true },
+  { name: 'Growth website', href: '/websites', who: 'Several services or towns you want to rank for', includes: 'Up to 12 pages, a page per service and per main town, reviews section, 2 rounds of changes', key: 'PRICE_GROWTH', from: true },
+  { name: 'Care plan (monthly)', who: "Anyone who doesn't want to think about it", includes: 'Hosting, security updates, backups, up to 30 min of edits a month, a monthly check that the form and call button work', key: 'PRICE_CARE_MONTHLY', from: false, suffix: '/month' },
+  { name: 'Get found (add-on)', href: '/get-found', who: 'Customers with a site who want more Maps visibility', includes: 'Google Business Profile setup or clean-up, local listings, a review request link', key: 'PRICE_GET_FOUND', from: true },
+  { name: 'Missed-call text-back (add-on)', href: '/automation', who: 'Owners who miss calls on jobs', includes: 'Auto-text to missed callers, quote follow-up reminder', key: 'PRICE_AUTOMATION', from: true, extra: '(+ any phone/SMS provider fees at cost)' },
+];
+---
+
+<BaseLayout
+  title="How Much Does a Contractor Website Cost? | Speed Agency"
+  description="Clear prices, no surprises. Fixed starting prices for trade business websites, the monthly care plan and add-ons, with exactly what's included. In USD."
+  crumbs={crumbs}
+  pageEvent={{ name: 'pricing_view' }}
+>
+  <PageHero
+    label="Pricing"
+    title="Clear prices. No surprises."
+    lede="Every project starts with a fixed quote. The prices below are starting points for typical projects. Your quote may differ if you need more pages or features, and you'll see that before you pay anything."
+  />
+
+  <section class="section alt">
+    <div class="wrap">
+      <SectionHead num="01" label="Packages" />
+      <table class="table">
+        <caption class="sr-only">Packages, who they're for, what's included and price</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="label">Package</th>
+            <th scope="col" class="label">Who it's for</th>
+            <th scope="col" class="label">Includes</th>
+            <th scope="col" class="label">Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map((r) => (
+              <tr>
+                <th scope="row" style="min-width:180px">
+                  <span class="h3" style="display:block">{r.name}</span>
+                  {r.href && <a href={r.href} class="link small">Details</a>}
+                </th>
+                <td data-label="Who it's for">{r.who}</td>
+                <td data-label="Includes">{r.includes}</td>
+                <td data-label="Price" style="white-space:nowrap">
+                  <strong>{r.from && 'From '}<F k={r.key} />{r.suffix}</strong>
+                  {r.extra && <p class="small muted" style="white-space:normal">{r.extra}</p>}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <div class="actions">
+        <a href="/book" class="btn btn-primary" data-cta="pricing_table_book">Get your fixed quote</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid">
+      <div class="col-6">
+        <SectionHead num="02" label="Not included unless quoted" />
+        <ul class="checklist no" role="list">
+          {excluded.map((i) => <li><Icon name="x" /><span>{i}</span></li>)}
+        </ul>
+      </div>
+      <div class="col-6">
+        <SectionHead num="03" label="Payment terms" />
+        <p class="lede"><F k="PAYMENT_TERMS" /></p>
+        <p class="mt-4">Accepted: <F k="PAYMENT_METHODS" />. All prices are in USD.</p>
+        <p class="mt-4 muted">No long-term contract. The care plan is month to month, and you own your domain and content.</p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Get your fixed quote." copy="Book a free 15-minute call. You'll get a fixed price within one business day, before you pay anything." button="Get your fixed quote" cta="pricing_final_book" />
+</BaseLayout>

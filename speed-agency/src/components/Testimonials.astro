@@ -1,0 +1,47 @@
+---
+/**
+ * Renders nothing unless at least one entry is verified with a name,
+ * business, town and permission note. No placeholder, no "coming soon".
+ */
+import { z } from 'astro/zod';
+import raw from '@/content/testimonials/testimonials.json';
+
+const schema = z.array(
+  z.object({
+    quote: z.string(),
+    name: z.string().default(''),
+    business: z.string().default(''),
+    town: z.string().default(''),
+    verified: z.boolean().default(false),
+    permission_note: z.string().default(''),
+  }),
+);
+const ok = schema
+  .parse(raw)
+  .filter((t) => t.verified && t.name.trim() && t.business.trim() && t.town.trim() && t.permission_note.trim())
+  .map((t) => ({ data: t }));
+---
+
+{
+  ok.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="label">What clients say</span>
+        </div>
+        <ul class="ruled" role="list">
+          {ok.map((t) => (
+            <li>
+              <blockquote>
+                <p class="lede">“{t.data.quote}”</p>
+                <footer class="muted mt-4">
+                  {t.data.name}, {t.data.business}, {t.data.town}
+                </footer>
+              </blockquote>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}

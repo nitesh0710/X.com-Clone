@@ -1,0 +1,81 @@
+---
+/**
+ * Style guide. Built on preview branches only; excluded from production
+ * (Cloudflare Pages `main` branch, or STRICT_PLACEHOLDERS=1).
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PricePanel from '@/components/PricePanel.astro';
+import DemoCard from '@/components/DemoCard.astro';
+import ProcessSteps from '@/components/ProcessSteps.astro';
+import FaqList from '@/components/FaqList.astro';
+import FounderCard from '@/components/FounderCard.astro';
+import EnquiryForm from '@/components/EnquiryForm.astro';
+import Icon from '@/components/Icon.astro';
+import { getCollection } from 'astro:content';
+import { faq } from '@/content/faq/faq';
+
+export function getStaticPaths() {
+  const production = process.env.CF_PAGES_BRANCH === 'main' || process.env.STRICT_PLACEHOLDERS === '1';
+  return production ? [] : [{ params: { page: 'styleguide' } }];
+}
+const work = await getCollection('work');
+const colors = [
+  ['--paper', '#F6F3EC'],
+  ['--paper-2', '#ECE7DB'],
+  ['--ink', '#16181B'],
+  ['--ink-2', '#4A4F57'],
+  ['--rule', '#CFC8B8'],
+  ['--signal', '#E8590C'],
+  ['--signal-ink', '#B4430A'],
+  ['--ok', '#2F7D4F'],
+  ['--error', '#B42318'],
+];
+---
+
+<BaseLayout title="Style guide (development only) | Speed Agency" description="Every component and state in the Job Sheet design system, for review on preview deploys. This page is never built in production." noindex>
+  <section class="page-hero wrap" data-hero>
+    <span class="label">Development only</span>
+    <h1>Style guide</h1>
+    <p class="lede">Every component and state. Not built in production.</p>
+  </section>
+  <section class="section alt">
+    <div class="wrap stack-lg">
+      <SectionHead num="01" label="Colour tokens" />
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px">
+        {colors.map(([n, h]) => <div class="panel"><div style={`height:56px;background:var(${n});border:1px solid var(--rule)`}></div><p class="label mt-4">{n}</p><p class="small">{h}</p></div>)}
+      </div>
+      <SectionHead num="02" label="Type" />
+      <h1>H1 Websites that make the phone ring.</h1>
+      <h2>H2 One website, built to get you calls.</h2>
+      <h3>H3 Free call (15 min).</h3>
+      <p>Body: When someone's water heater dies, they search, compare two or three names and call the one that looks real.</p>
+      <p class="label">Label 01 — Why this matters</p>
+      <p>Placeholder: <mark class="ph">{'{{EXAMPLE}}'}</mark></p>
+      <SectionHead num="03" label="Buttons" />
+      <div class="actions">
+        <a href="/book" class="btn btn-primary">Primary</a>
+        <a href="/book" class="btn btn-secondary">Secondary</a>
+        <button class="btn btn-primary" disabled>Disabled</button>
+        <button class="btn btn-primary" aria-busy="true"><span class="spinner" aria-hidden="true"></span>Sending…</button>
+        <a href="/book" class="text-link">Text link <Icon name="arrow-right" /></a>
+        <a href="tel:+15550100000" class="btn btn-secondary"><Icon name="phone" /> Call button (shown only when US_PHONE is set)</a>
+      </div>
+      <SectionHead num="04" label="Badges" />
+      <div class="actions"><span class="badge">Concept project — demonstration only</span><span class="badge client">Client project</span></div>
+      <SectionHead num="05" label="Price panel" />
+      <div class="price-row"><PricePanel label="Starter website" priceKey="PRICE_STARTER" items={['Up to 5 pages', 'Tap-to-call']} button={{ href: '/book', text: 'Get your quote', cta: 'sg' }} /><FounderCard /></div>
+      <SectionHead num="06" label="Demo cards" />
+      <div class="work-grid asym">{work.map((w) => <DemoCard entry={w} />)}</div>
+      <SectionHead num="07" label="Process steps" />
+      <ProcessSteps />
+      <SectionHead num="08" label="FAQ" />
+      <FaqList items={faq.slice(0, 3)} />
+      <SectionHead num="09" label="Notices" />
+      <p class="notice">Neutral notice.</p>
+      <p class="notice error">Couldn't send. Please try again.</p>
+      <SectionHead num="10" label="Form (submit with empty fields to see error states)" />
+      <div style="max-width:720px"><EnquiryForm id="sg-form" formType="brief" /></div>
+    </div>
+  </section>
+</BaseLayout>

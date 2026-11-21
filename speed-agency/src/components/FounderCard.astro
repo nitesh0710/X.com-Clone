@@ -1,0 +1,18 @@
+---
+import F from './F.astro';
+import { facts, hasFact } from '@/config/site';
+---
+
+<div class="founder-card">
+  {
+    hasFact('FOUNDER_PHOTO') ? (
+      <img src={facts.FOUNDER_PHOTO} alt={hasFact('FOUNDER_NAME') ? facts.FOUNDER_NAME : 'Founder'} width="64" height="64" loading="eager" />
+    ) : (
+      <span class="photo-ph" role="img" aria-label="Founder photo placeholder">{'{{FOUNDER_PHOTO}}'}</span>
+    )
+  }
+  <div>
+    <p><strong><F k="FOUNDER_NAME" /></strong>, founder</p>
+    <p class="muted"><F k="LOCATION_STATEMENT_SHORT" /></p>
+  </div>
+</div>

@@ -1,0 +1,87 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LegalDraftNote from '@/components/LegalDraftNote.astro';
+import F from '@/components/F.astro';
+const updated = 'November 21, 2026';
+---
+
+<BaseLayout
+  title="Privacy Policy | Speed Agency Websites for Trade Businesses"
+  description="How Speed Agency collects, uses, stores and protects the details you send through this website, who processes them, and how to access or delete your data."
+>
+  <section class="page-hero wrap" data-hero>
+    <span class="label">Legal</span>
+    <h1>Privacy policy</h1>
+    <p class="muted mt-4">Last updated {updated}</p>
+    <LegalDraftNote />
+  </section>
+  <section class="section alt" style="padding-top:var(--s-7)">
+    <div class="wrap prose" style="max-width:68ch">
+      <h2>Who I am</h2>
+      <p>
+        This website is run by <F k="LEGAL_NAME" />, trading as Speed Agency. <F k="LOCATION_STATEMENT" /> For anything
+        about your personal data, email <F k="CONTACT_EMAIL" />. For the purposes of data protection law, I am the
+        controller of the personal information described here.
+      </p>
+
+      <h2>What I collect</h2>
+      <ul>
+        <li><strong>What you type into a form:</strong> your name, email, phone number, business name, town and state, what you need, and anything else you choose to tell me (for example your website address, trade, services, towns, timeline and budget).</li>
+        <li><strong>Booking details</strong> when you book a call through the calendar: your name, email, the time you chose and any notes.</li>
+        <li><strong>A one-way hash of your IP address</strong> (a scrambled code that can't be turned back into the address), used to stop spam and limit repeated submissions. I never store your raw IP address.</li>
+        <li><strong>Basic usage events</strong>, such as which buttons were clicked and whether a form was started, recorded without cookies and without identifying you. Each page view gets a random code that isn't stored on your device.</li>
+        <li><strong>Campaign codes</strong> (UTM parameters) from the link you arrived on, if any, so I know which email or post brought you here.</li>
+        <li><strong>Your consent choice</strong> for tips emails, with the date and the exact wording you saw.</li>
+      </ul>
+
+      <h2>Why I use it</h2>
+      <ul>
+        <li>To reply to your enquiry and give you a quote (to take steps at your request before a contract).</li>
+        <li>To deliver services if you become a client (to perform a contract).</li>
+        <li>To keep the site secure and free of spam (my legitimate interest).</li>
+        <li>To understand which pages and buttons help people get in touch (my legitimate interest), using cookieless, aggregate data.</li>
+        <li>To send occasional tips emails, <strong>only if you ticked the box</strong> (your consent). You can unsubscribe at any time from any email.</li>
+      </ul>
+      <p>I do not sell or share your personal information, and I do not use it for advertising.</p>
+
+      <h2>Who processes it for me</h2>
+      <ul>
+        <li><strong>Cloudflare</strong>: website hosting, database, spam protection (Turnstile) and cookieless analytics.</li>
+        <li><strong>Resend</strong>: sending email notifications and auto-replies.</li>
+        <li><strong>Cal.com</strong>: the booking calendar, if you book a call.</li>
+      </ul>
+      <p>Each processes data on my behalf under its own data protection terms.</p>
+
+      <h2>How long I keep it</h2>
+      <p>
+        Enquiries that didn't go ahead, or were spam, are deleted after <F k="RETENTION_MONTHS" /> months. Usage events are
+        deleted after 13 months. If you become a client, I keep project records for as long as the law requires for
+        business and tax purposes.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>Depending on where you live, you have rights over your personal information:</p>
+      <ul>
+        <li><strong>Everyone:</strong> you can ask what I hold about you, ask me to correct it, or ask me to delete it.</li>
+        <li><strong>UK and EU (UK GDPR and GDPR):</strong> the rights of access, correction, deletion, restriction, portability and objection, and the right to complain to your data protection authority (in the UK, the ICO).</li>
+        <li><strong>California (CCPA/CPRA):</strong> the right to know, delete and correct, and the right not to be discriminated against for using these rights. I do not sell or share personal information.</li>
+      </ul>
+
+      <h2>How to make a request</h2>
+      <p>Email <F k="CONTACT_EMAIL" /> with your request. I may ask you to confirm your identity. I'll respond within one month, and usually much sooner.</p>
+
+      <h2>International transfers</h2>
+      <p>
+        I and my service providers may process your information in countries other than your own, including the United
+        States. Where the law requires it, these transfers are covered by appropriate safeguards such as standard
+        contractual clauses.
+      </p>
+
+      <h2>Cookies</h2>
+      <p>This site doesn't use tracking cookies. See the <a href="/cookies">cookie policy</a>.</p>
+
+      <h2>Changes</h2>
+      <p>If this policy changes, I'll update the date at the top of this page.</p>
+    </div>
+  </section>
+</BaseLayout>

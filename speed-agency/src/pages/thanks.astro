@@ -1,0 +1,26 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/Icon.astro';
+import F from '@/components/F.astro';
+---
+
+<BaseLayout
+  title="Thanks, Your Message Arrived | Speed Agency Web Studio"
+  description="Your message reached Speed Agency. I'll reply within one business day. Meanwhile, see concept websites built for plumbers, electricians and roofers."
+  noindex
+  stickyBar={false}
+>
+  <section class="page-hero wrap" data-hero>
+    <span class="label" style="color:var(--ok)">✓ Sent</span>
+    <h1>Got it, thanks.</h1>
+    <div class="lede stack">
+      <p>I'll reply within one business day.</p>
+      <p data-review-line>If you asked for a video review, it will arrive by email within <F k="REVIEW_TURNAROUND" />.</p>
+      <p>In the meantime, here's what a trade site can look like.</p>
+    </div>
+    <div class="actions">
+      <a href="/work" class="btn btn-primary" data-cta="thanks_work">See concept projects</a>
+      <a href="/" class="text-link">Back to home <Icon name="arrow-right" /></a>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,343 @@
+---
+import { NEEDS, TRADES, TIMELINES } from '@/lib/schema';
+import { config, facts, hasFact } from '@/config/site';
+import { fillText } from '@/lib/fill';
+
+interface Props {
+  /** 'quick' by default; /contact switches to 'brief' when ?brief=1. */
+  formType?: 'quick' | 'brief';
+  /** Show the brief fields toggle via ?brief=1 on this page. */
+  allowBrief?: boolean;
+  id?: string;
+}
+const { formType = 'quick', allowBrief = false, id = 'enquiry' } = Astro.props;
+
+const budgets = [
+  { value: 'under_low', label: fillText('Under {{BUDGET_LOW}}') },
+  { value: 'low_high', label: fillText('{{BUDGET_LOW}}–{{BUDGET_HIGH}}') },
+  { value: 'over_high', label: fillText('Over {{BUDGET_HIGH}}') },
+  { value: 'not_sure', label: 'Not sure' },
+];
+const email = hasFact('CONTACT_EMAIL') ? facts.CONTACT_EMAIL : '{{CONTACT_EMAIL}}';
+const siteKey = config.turnstileSiteKey;
+---
+
+<form
+  class="form"
+  id={id}
+  method="post"
+  action="/api/enquiry"
+  novalidate
+  data-enquiry-form
+  data-form-type={formType}
+  data-allow-brief={allowBrief ? 'true' : undefined}
+  data-email={email}
+>
+  <div class="error-summary" tabindex="-1" data-error-summary hidden>
+    <h2>Please fix the following</h2>
+    <ul data-error-list></ul>
+  </div>
+  <div class="notice error" role="alert" data-form-alert hidden></div>
+
+  <input type="hidden" name="form_type" value={formType} />
+
+  <div class="form-row two">
+    <div class="field">
+      <label for={`${id}-name`}>Your name <span class="req">(required)</span></label>
+      <input class="input" id={`${id}-name`} name="name" type="text" autocomplete="name" maxlength="100" required aria-describedby={`${id}-name-err`} />
+      <p class="field-error" id={`${id}-name-err`} hidden></p>
+    </div>
+    <div class="field">
+      <label for={`${id}-email`}>Email <span class="req">(required)</span></label>
+      <input class="input" id={`${id}-email`} name="email" type="email" autocomplete="email" inputmode="email" maxlength="200" required aria-describedby={`${id}-email-err`} />
+      <p class="field-error" id={`${id}-email-err`} hidden></p>
+    </div>
+  </div>
+
+  <div class="form-row two">
+    <div class="field">
+      <label for={`${id}-phone`}>Phone <span class="req">(optional)</span></label>
+      <input class="input" id={`${id}-phone`} name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="40" aria-describedby={`${id}-phone-err`} />
+      <p class="field-error" id={`${id}-phone-err`} hidden></p>
+    </div>
+    <div class="field">
+      <label for={`${id}-business_name`}>Business name <span class="req">(required)</span></label>
+      <input class="input" id={`${id}-business_name`} name="business_name" type="text" autocomplete="organization" maxlength="150" required aria-describedby={`${id}-business_name-err`} />
+      <p class="field-error" id={`${id}-business_name-err`} hidden></p>
+    </div>
+  </div>
+
+  <div class="form-row two">
+    <div class="field">
+      <label for={`${id}-town_state`}>Town and state <span class="req">(required)</span></label>
+      <input class="input" id={`${id}-town_state`} name="town_state" type="text" autocomplete="address-level2" placeholder="e.g. Dayton, OH" maxlength="120" required aria-describedby={`${id}-town_state-err`} />
+      <p class="field-error" id={`${id}-town_state-err`} hidden></p>
+    </div>
+    <div class="field">
+      <label for={`${id}-need`}>What do you need? <span class="req">(required)</span></label>
+      <select class="input" id={`${id}-need`} name="need" required aria-describedby={`${id}-need-err`}>
+        <option value="">Choose one</option>
+        {NEEDS.map((n) => <option value={n.value}>{n.label}</option>)}
+      </select>
+      <p class="field-error" id={`${id}-need-err`} hidden></p>
+    </div>
+  </div>
+
+  <fieldset class="form" data-brief-fields hidden={formType !== 'brief'} style="border:0;padding:0;margin:0">
+    <legend class="label muted" style="margin-bottom:var(--s-4)">Project brief</legend>
+    <div class="form-row two">
+      <div class="field">
+        <label for={`${id}-website_url`}>Current website address <span class="req">(optional)</span></label>
+        <input class="input" id={`${id}-website_url`} name="website_url" type="text" inputmode="url" autocomplete="url" maxlength="300" placeholder="e.g. mybusiness.com" aria-describedby={`${id}-website_url-err`} />
+        <p class="field-error" id={`${id}-website_url-err`} hidden></p>
+      </div>
+      <div class="field">
+        <label for={`${id}-trade`}>Your trade <span class="req">(optional)</span></label>
+        <select class="input" id={`${id}-trade`} name="trade" aria-describedby={`${id}-trade-err`}>
+          <option value="">Choose one</option>
+          {TRADES.map((t) => <option value={t.value}>{t.label}</option>)}
+        </select>
+        <p class="field-error" id={`${id}-trade-err`} hidden></p>
+      </div>
+    </div>
+    <div class="field">
+      <label for={`${id}-services`}>Services you offer <span class="req">(optional)</span></label>
+      <textarea class="input" id={`${id}-services`} name="services" rows="3" maxlength="1000" aria-describedby={`${id}-services-err`} style="min-height:96px"></textarea>
+      <p class="field-error" id={`${id}-services-err`} hidden></p>
+    </div>
+    <div class="field">
+      <label for={`${id}-towns`}>Towns you cover <span class="req">(optional)</span></label>
+      <input class="input" id={`${id}-towns`} name="towns" type="text" maxlength="500" aria-describedby={`${id}-towns-err`} />
+      <p class="field-error" id={`${id}-towns-err`} hidden></p>
+    </div>
+    <div class="form-row two">
+      <div class="field">
+        <label for={`${id}-timeline`}>Timeline <span class="req">(optional)</span></label>
+        <select class="input" id={`${id}-timeline`} name="timeline" aria-describedby={`${id}-timeline-err`}>
+          <option value="">Choose one</option>
+          {TIMELINES.map((t) => <option value={t.value}>{t.label}</option>)}
+        </select>
+        <p class="field-error" id={`${id}-timeline-err`} hidden></p>
+      </div>
+      <div class="field">
+        <label for={`${id}-budget`}>Budget <span class="req">(optional)</span></label>
+        <select class="input" id={`${id}-budget`} name="budget" aria-describedby={`${id}-budget-err`}>
+          <option value="">Choose one</option>
+          {budgets.map((b) => <option value={b.value}>{b.label}</option>)}
+        </select>
+        <p class="field-error" id={`${id}-budget-err`} hidden></p>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="field">
+    <label for={`${id}-message`}>Anything else? <span class="req">(optional)</span></label>
+    <textarea class="input" id={`${id}-message`} name="message" rows="5" maxlength="3000" aria-describedby={`${id}-message-hint ${id}-message-err`}></textarea>
+    <p class="hint" id={`${id}-message-hint`}>Up to 3,000 characters.</p>
+    <p class="field-error" id={`${id}-message-err`} hidden></p>
+  </div>
+
+  <!-- Honeypot: humans never see or fill this. -->
+  <div class="hp" aria-hidden="true">
+    <label for={`${id}-company_website`}>Leave this empty</label>
+    <input id={`${id}-company_website`} name="company_website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <label class="check">
+    <input type="checkbox" name="marketing_consent" value="1" />
+    <span>{config.consentText}</span>
+  </label>
+
+  {siteKey ? <div class="cf-turnstile" data-sitekey={siteKey} data-theme="light" data-size="flexible"></div> : <p class="small muted" data-dev-only>Spam check (Turnstile) is off: <code>PUBLIC_TURNSTILE_SITEKEY</code> isn't set.</p>}
+
+  <div>
+    <button type="submit" class="btn btn-primary" data-submit>
+      <span class="spinner" aria-hidden="true" hidden data-spinner></span>
+      <span data-submit-label>Send message</span>
+    </button>
+    <p class="form-note mt-4">
+      {config.privacyNote} See the <a href="/privacy">privacy policy</a>.
+    </p>
+  </div>
+</form>
+
+{siteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+
+<script>
+  import { enquirySchema, fieldErrors } from '@/lib/schema';
+  import { readUtm, track } from '@/lib/events';
+
+  const LABELS: Record<string, string> = {
+    name: 'Your name',
+    email: 'Email',
+    phone: 'Phone',
+    business_name: 'Business name',
+    town_state: 'Town and state',
+    need: 'What do you need?',
+    message: 'Anything else?',
+    website_url: 'Current website address',
+    trade: 'Your trade',
+    services: 'Services you offer',
+    towns: 'Towns you cover',
+    timeline: 'Timeline',
+    budget: 'Budget',
+  };
+
+  document.querySelectorAll<HTMLFormElement>('[data-enquiry-form]').forEach((form) => {
+    const id = form.id;
+    const params = new URLSearchParams(location.search);
+    const typeInput = form.querySelector<HTMLInputElement>('input[name="form_type"]')!;
+    const brief = form.querySelector<HTMLFieldSetElement>('[data-brief-fields]')!;
+    const summary = form.querySelector<HTMLElement>('[data-error-summary]')!;
+    const list = form.querySelector<HTMLUListElement>('[data-error-list]')!;
+    const alertBox = form.querySelector<HTMLElement>('[data-form-alert]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const spinner = form.querySelector<HTMLElement>('[data-spinner]')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    const email = form.dataset.email ?? '';
+
+    if (form.dataset.allowBrief && params.get('brief') === '1') {
+      typeInput.value = 'brief';
+      brief.hidden = false;
+    }
+    if (params.get('topic') === 'review') {
+      const need = form.querySelector<HTMLSelectElement>('select[name="need"]');
+      if (need) need.value = 'video_review';
+    }
+
+    // Messages for the no-JavaScript fallback (the API redirects back with ?error=).
+    const fallbackErrors: Record<string, string> = {
+      rate: `You've sent several messages in the last hour, so I've paused new ones for now. Please email ${email} instead.`,
+      invalid: 'Some details were missing or not quite right. Please check the form and send it again.',
+      spamcheck: "The spam check didn't complete. Please try again.",
+      server: `Couldn't send. Please try again, or email ${email}.`,
+    };
+    const errParam = params.get('error');
+    if (errParam && fallbackErrors[errParam]) {
+      alertBox.textContent = fallbackErrors[errParam]!;
+      alertBox.hidden = false;
+    }
+
+    let started = false;
+    form.addEventListener('input', () => {
+      if (!started) {
+        started = true;
+        track('form_start', typeInput.value);
+      }
+    });
+
+    const clearErrors = () => {
+      summary.hidden = true;
+      list.replaceChildren();
+      alertBox.hidden = true;
+      form.querySelectorAll('[aria-invalid="true"]').forEach((el) => el.removeAttribute('aria-invalid'));
+      form.querySelectorAll<HTMLElement>('.field-error').forEach((el) => {
+        el.hidden = true;
+        el.textContent = '';
+      });
+    };
+
+    const showErrors = (errors: Record<string, string>) => {
+      list.replaceChildren();
+      let any = false;
+      for (const [field, msg] of Object.entries(errors)) {
+        const input = form.querySelector<HTMLElement>(`[name="${field}"]`);
+        const errEl = document.getElementById(`${id}-${field}-err`);
+        if (!input || !errEl) continue;
+        any = true;
+        input.setAttribute('aria-invalid', 'true');
+        errEl.textContent = msg;
+        errEl.hidden = false;
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `#${id}-${field}`;
+        a.textContent = `${LABELS[field] ?? field}: ${msg}`;
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          (input as HTMLInputElement).focus();
+        });
+        li.append(a);
+        list.append(li);
+      }
+      if (any) {
+        summary.hidden = false;
+        summary.focus();
+      } else {
+        showAlert(Object.values(errors)[0] ?? 'Something went wrong.');
+      }
+    };
+
+    const showAlert = (msg: string) => {
+      alertBox.textContent = msg;
+      alertBox.hidden = false;
+      alertBox.scrollIntoView({ block: 'center' });
+    };
+
+    const setBusy = (busy: boolean) => {
+      submit.disabled = busy;
+      submit.setAttribute('aria-busy', String(busy));
+      spinner.hidden = !busy;
+      submitLabel.textContent = busy ? 'Sending…' : 'Send message';
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+      const fd = new FormData(form);
+      const raw: Record<string, unknown> = {};
+      for (const [k, v] of fd.entries()) if (typeof v === 'string') raw[k] = v;
+      const isBrief = typeInput.value === 'brief';
+      if (!isBrief) for (const k of ['website_url', 'trade', 'services', 'towns', 'timeline', 'budget']) delete raw[k];
+      const payload = {
+        ...raw,
+        marketing_consent: fd.get('marketing_consent') === '1',
+        source_page: location.pathname,
+        ...readUtm(),
+      };
+      const honeypot = String(fd.get('company_website') ?? '');
+      const turnstileToken = String(fd.get('cf-turnstile-response') ?? '');
+      delete (payload as Record<string, unknown>)['company_website'];
+      delete (payload as Record<string, unknown>)['cf-turnstile-response'];
+
+      const parsed = enquirySchema.safeParse(payload);
+      if (!parsed.success) {
+        showErrors(fieldErrors(parsed.error));
+        return;
+      }
+
+      setBusy(true);
+      let res: Response;
+      try {
+        res = await fetch('/api/enquiry', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify({ ...parsed.data, company_website: honeypot, turnstile_token: turnstileToken }),
+        });
+      } catch {
+        setBusy(false);
+        showAlert(`Couldn't send. Please try again, or email ${email}.`);
+        return;
+      }
+
+      let body: { ok?: boolean; errors?: Record<string, string>; message?: string } = {};
+      try {
+        body = await res.json();
+      } catch {
+        /* non-JSON */
+      }
+
+      if (res.ok && body.ok) {
+        const t = parsed.data.need === 'video_review' ? 'review' : parsed.data.form_type;
+        location.assign(`/thanks?type=${encodeURIComponent(t)}`);
+        return;
+      }
+
+      setBusy(false);
+      (window as unknown as { turnstile?: { reset: () => void } }).turnstile?.reset();
+      if (res.status === 400 && body.errors) showErrors(body.errors);
+      else if (res.status === 429)
+        showAlert(`You've sent several messages in the last hour, so I've paused new ones for now. Please email ${email} instead.`);
+      else showAlert(body.message ?? `Couldn't send. Please try again, or email ${email}.`);
+    });
+  });
+</script>

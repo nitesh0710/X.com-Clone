@@ -1,0 +1,99 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PricePanel from '@/components/PricePanel.astro';
+import DemoCard from '@/components/DemoCard.astro';
+import FaqList from '@/components/FaqList.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Icon from '@/components/Icon.astro';
+import { starterItems, growthItems } from '@/lib/offer';
+import { serviceLd } from '@/lib/seo';
+
+export async function getStaticPaths() {
+  const all = await getCollection('industries');
+  return all.map((entry) => ({ params: { trade: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const concept = await getEntry('work', d.concept);
+if (!concept) throw new Error(`Industry ${entry.id}: unknown concept "${d.concept}"`);
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Websites for trades', href: '/websites' },
+  { name: d.h1, href: `/websites/${entry.id}` },
+];
+---
+
+<BaseLayout
+  title={d.seoTitle}
+  description={d.description}
+  crumbs={crumbs}
+  jsonLd={[serviceLd({ name: d.h1, description: d.description, path: `/websites/${entry.id}`, priceKey: 'PRICE_STARTER' })]}
+>
+  <PageHero label={`Websites for trades / ${d.trade}`} title={d.h1} lede={d.lede}>
+    <div class="actions" data-loc="hero">
+      <a href="/book" class="btn btn-primary" data-cta={`industry_${entry.id}_hero_book`}>Book a free 15-minute call</a>
+      <a href="/websites" class="text-link">What every site includes <Icon name="arrow-right" /></a>
+    </div>
+  </PageHero>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <article class="col-8 prose">
+        <Content />
+      </article>
+      <div class="col-4">
+        <div class="panel stack" style="position:sticky;top:96px">
+          <p class="label">The short version</p>
+          <p>A fixed-price website for your {d.tradeSingular}, live in about a week, built to get calls and quote requests.</p>
+          <a href="/book" class="btn btn-primary btn-block" data-cta={`industry_${entry.id}_aside_book`}>Book a free call</a>
+          <a href="/pricing" class="text-link">See pricing <Icon name="arrow-right" /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead label="Concept project" />
+      <div class="work-grid two">
+        <DemoCard entry={concept} />
+        <div class="stack">
+          <h2 class="sec-title">See the approach in a working concept.</h2>
+          <p class="muted">This is a demonstration, not a paid client project. Your site would use your name, services, towns and photos.</p>
+          <a href={`/work/${concept.id}`} class="text-link">View the concept <Icon name="arrow-right" /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-5">
+        <SectionHead label="Questions" />
+        <h2 class="sec-title">{d.trade}: common questions.</h2>
+      </div>
+      <div class="col-7"><FaqList items={d.faqs} /></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead label="Price" />
+      <h2 class="sec-title">The same clear prices for every trade.</h2>
+      <div class="price-row mt-6">
+        <PricePanel label="Starter website" priceKey="PRICE_STARTER" items={starterItems} button={{ href: '/book', text: 'Get your fixed quote', cta: `industry_${entry.id}_starter` }} />
+        <PricePanel label="Growth website" priceKey="PRICE_GROWTH" items={growthItems} button={{ href: '/book', text: 'Get your fixed quote', cta: `industry_${entry.id}_growth` }} />
+      </div>
+      <p class="mt-5 muted">
+        <a href="/pricing" class="link">Full pricing</a> · <a href="/websites" class="link">Everything included in a trade website</a>
+      </p>
+    </div>
+  </section>
+
+  <CtaBand title={`Want more calls for your ${d.tradeSingular}?`} cta={`industry_${entry.id}_final_book`} />
+</BaseLayout>

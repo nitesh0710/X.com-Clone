@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import FaqList from '@/components/FaqList.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import { faq } from '@/content/faq/faq';
+import { faqLd } from '@/lib/seo';
+import { plainText } from '@/lib/fill';
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'FAQ', href: '/faq' },
+];
+---
+
+<BaseLayout
+  title="FAQ: Cost, Timing, Contracts & Google | Speed Agency"
+  description="Straight answers on what a trade website costs, how long it takes, whether it will get you calls, who owns it, contracts, payment and where I'm based."
+  crumbs={crumbs}
+  jsonLd={[faqLd(faq.map((f) => ({ q: f.q, a: plainText(f.a) })))]}
+>
+  <PageHero label="FAQ" title="Straight answers." lede="Everything trade owners usually ask before booking a call. If yours isn't here, ask me directly." />
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-8"><FaqList items={faq} /></div>
+      <div class="col-4">
+        <div class="panel stack">
+          <p class="label">Still have a question?</p>
+          <a href="/book" class="btn btn-primary btn-block" data-cta="faq_aside_book">Book a free call</a>
+          <a href="/contact" class="text-link">Or send a message</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <CtaBand cta="faq_final_book" />
+</BaseLayout>

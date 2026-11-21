@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Icon from '@/components/Icon.astro';
+
+const posts = (await getCollection('insights', (p) => !p.data.draft)).sort(
+  (a, b) => b.data.published.getTime() - a.data.published.getTime(),
+);
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Insights', href: '/insights' },
+];
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+---
+
+<BaseLayout
+  title="Insights: Practical Website Guides for Trade Businesses"
+  description="Practical guides for plumbers, electricians, HVAC techs, roofers and other trade owners on websites, Google listings and getting more calls. Plain English."
+  crumbs={crumbs}
+>
+  <PageHero label="Insights" title="Practical guides for trade owners." lede="Short, useful articles on websites, Google and getting more calls. Written plainly, for reading between jobs." />
+  <section class="section alt">
+    <div class="wrap">
+      <ul class="ruled" role="list">
+        {
+          posts.map((p) => (
+            <li>
+              <article class="stack">
+                <p class="label muted"><time datetime={p.data.published.toISOString()}>{fmt(p.data.published)}</time></p>
+                <h2 class="h3"><a href={`/insights/${p.id}`} style="text-decoration:none">{p.data.title}</a></h2>
+                <p class="muted">{p.data.description}</p>
+                <a href={`/insights/${p.id}`} class="text-link" aria-hidden="true" tabindex="-1">Read the guide <Icon name="arrow-right" /></a>
+              </article>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+  <CtaBand cta="insights_final_book" />
+</BaseLayout>

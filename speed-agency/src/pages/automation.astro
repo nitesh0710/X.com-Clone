@@ -1,0 +1,149 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PricePanel from '@/components/PricePanel.astro';
+import FaqList from '@/components/FaqList.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Icon from '@/components/Icon.astro';
+import { serviceLd } from '@/lib/seo';
+import { gates } from '@/config/site';
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Never miss a job', href: '/automation' },
+];
+const lede =
+  "When you can't pick up, the customer usually calls the next number. A missed-call text-back sends them a message within a minute, so they wait for you instead.";
+const faqs = [
+  {
+    q: 'Do I need a new phone number?',
+    a: "Usually you keep your number and calls are forwarded through a texting service when you don't answer. In some setups a new number is simpler. I'll explain the options for your phone provider on the call before anything changes.",
+  },
+  {
+    q: 'What does it cost to run each month?',
+    a: 'The setup is a one-time price. The phone/SMS provider charges a small monthly fee and per-text costs, which I pass through at cost with no markup. I’ll estimate them for you based on how many calls you miss.',
+  },
+  {
+    q: 'Is it complicated to use?',
+    a: "No. Once it's set up there's nothing to log into. Missed callers get a text, form requests arrive on your phone, and you get a reminder when a quote hasn't had a reply. You just reply as normal.",
+  },
+  {
+    q: 'Is the AI assistant a product I can buy today?',
+    a: "No. It's a custom project, scoped and quoted for your business after a conversation. Most owners get more from the missed-call text-back first.",
+  },
+];
+---
+
+<BaseLayout
+  title="Missed Call Text Back for Contractors | Speed Agency"
+  description="Stop losing jobs to missed calls. An automatic text to missed callers, form requests sent to your phone and quote follow-up reminders. Simple, fixed price."
+  crumbs={crumbs}
+  jsonLd={[serviceLd({ name: 'Missed-call text-back for trade businesses', description: lede, path: '/automation', priceKey: 'PRICE_AUTOMATION' })]}
+>
+  <PageHero label="Never miss a job" title="Stop losing jobs to missed calls." lede={lede}>
+    <div class="notice mt-6" style="max-width:60ch">
+      <p><strong>Already have a site from us?</strong> This plugs straight into it. Don't have a website yet? Start with <a class="link" href="/websites">a website built for trades</a>.</p>
+    </div>
+    <div class="actions" data-loc="hero">
+      <a href="/book" class="btn btn-primary" data-cta="automation_hero_book">Book a free call</a>
+    </div>
+  </PageHero>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-6">
+        <SectionHead num="01" label="Who it's for" />
+        <p class="lede">Owners who are on the tools all day and can't always answer the phone, especially solo operators and small crews.</p>
+      </div>
+      <div class="col-6">
+        <SectionHead num="02" label="The problem" />
+        <p class="lede">A missed call is often a lost job. The customer doesn't leave a voicemail; they call the next business on the list. And quotes you sent but never followed up on quietly go cold.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid">
+      <div class="col-7">
+        <SectionHead num="03" label="What I set up" />
+        <ul class="ruled" role="list">
+          <li>
+            <strong>An automatic text to missed callers.</strong> For example:
+            <blockquote class="panel mt-4" style="font-size:16px">
+              “Sorry I missed you, I'm on a job. What do you need help with? I'll call you back shortly. — [Your business name]”
+            </blockquote>
+          </li>
+          <li><strong>Form requests forwarded to your phone by text,</strong> so you see new quote requests between jobs.</li>
+          <li><strong>A reminder to follow up on quotes</strong> you sent but haven't heard back on.</li>
+        </ul>
+        <p class="mt-5"><strong>Texts go only to people who contacted you first, and include opt-out wording, in line with US texting rules.</strong></p>
+        <p class="small muted mt-4">
+          US texting rules (including TCPA and carrier 10DLC registration) apply to your business as the sender. I set the system up to follow them, and I'll walk you through the registration your provider needs, but I can't give legal advice or take on compliance for you.
+          {!gates.SMS_COMPLIANCE_REVIEWED && <mark class="ph">{'{{SMS_COMPLIANCE_REVIEWED}}'}</mark>}
+        </p>
+      </div>
+      <div class="col-5">
+        <SectionHead num="04" label="Custom projects" />
+        <div class="panel stack">
+          <span class="badge">Custom project — scoped and quoted individually</span>
+          <h2 class="h3">AI assistant for chat or after-hours calls</h2>
+          <p>An assistant that answers website chat or after-hours calls with your FAQs and books callbacks. Not a packaged product: we talk about whether it fits your business first, then I quote it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-7">
+        <SectionHead num="05" label="What you get" />
+        <ul class="checklist" role="list">
+          <li><Icon name="check" /><span>Missed-call text-back, tested with you on your own phone</span></li>
+          <li><Icon name="check" /><span>Quote requests from your website forwarded to your phone</span></li>
+          <li><Icon name="check" /><span>Quote follow-up reminders</span></li>
+          <li><Icon name="check" /><span>A one-page guide to changing the message yourself</span></li>
+        </ul>
+      </div>
+      <div class="col-5">
+        <SectionHead num="06" label="Not included" />
+        <ul class="checklist no" role="list">
+          <li><Icon name="x" /><span>Phone/SMS provider fees (passed through at cost)</span></li>
+          <li><Icon name="x" /><span>Marketing text blasts to customer lists</span></li>
+          <li><Icon name="x" /><span>Legal advice on texting compliance</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid">
+      <div class="col-7">
+        <SectionHead num="07" label="Process" />
+        <ol class="steps" role="list">
+          <li><h3 class="h3">Free call.</h3><p class="muted">How you take calls today, your phone provider, and how many calls you miss.</p></li>
+          <li><h3 class="h3">Setup.</h3><p class="muted">I set up the texting service and help with the provider registration it needs.</p></li>
+          <li><h3 class="h3">Test together.</h3><p class="muted">We call your number, let it ring out, and check the text arrives and reads right.</p></li>
+        </ol>
+        <SectionHead num="08" label="Example" />
+        <p>The text above is the kind of message a missed caller receives. I'll show you a working demo of the text-back on our call.</p>
+      </div>
+      <div class="col-5">
+        <SectionHead num="09" label="Price" />
+        <PricePanel label="Missed-call text-back (setup)" priceKey="PRICE_AUTOMATION" note="Plus phone/SMS provider costs, passed through at cost." button={{ href: '/book', text: 'Book a free call', cta: 'automation_price_book' }} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-5">
+        <SectionHead num="10" label="FAQs" />
+        <h2 class="sec-title">Questions about missed-call text-back.</h2>
+      </div>
+      <div class="col-7"><FaqList items={faqs} /></div>
+    </div>
+  </section>
+
+  <CtaBand title="Stop losing jobs to missed calls." copy="Book a free 15-minute call. I'll ask how you handle calls today and tell you honestly whether a text-back would help." cta="automation_final_book" />
+</BaseLayout>

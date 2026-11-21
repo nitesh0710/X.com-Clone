@@ -1,0 +1,41 @@
+---
+import { facts, hasFact } from '@/config/site';
+import F from './F.astro';
+interface Props {
+  title?: string;
+  copy?: string;
+  button?: string;
+  cta?: string;
+  showEmail?: boolean;
+}
+const {
+  title = 'Want more calls from local customers?',
+  copy = "Book a free 15-minute call. You'll get a straight answer on whether a website will help your business, and a fixed price if it will.",
+  button = 'Book your free call',
+  cta = 'final_book',
+  showEmail = true,
+} = Astro.props;
+---
+
+<section class="section ink" data-loc="final_cta">
+  <div class="wrap">
+    <div class="sec-head"><span class="label">Next step</span></div>
+    <h2 class="sec-title wide">{title}</h2>
+    <p class="lede" style="color:var(--paper)">{copy}</p>
+    <div class="actions">
+      <a href="/book" class="btn btn-primary" data-cta={cta}>{button}</a>
+      {
+        showEmail &&
+          (hasFact('CONTACT_EMAIL') ? (
+            <a href={`mailto:${facts.CONTACT_EMAIL}`} class="text-link" data-cta="final_email">
+              Email me instead
+            </a>
+          ) : (
+            <span class="text-link">
+              Email me instead: <F k="CONTACT_EMAIL" />
+            </span>
+          ))
+      }
+    </div>
+  </div>
+</section>

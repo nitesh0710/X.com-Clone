@@ -1,0 +1,25 @@
+---
+import Icon from './Icon.astro';
+import { fillHtml } from '@/lib/fill';
+interface Props {
+  items: { q: string; a: string }[];
+  headingLevel?: 'h2' | 'h3';
+}
+const { items } = Astro.props;
+---
+
+<div class="faq">
+  {
+    items.map((i) => (
+      <details>
+        <summary>
+          <span>{i.q}</span>
+          <Icon name="plus" />
+        </summary>
+        <div class="answer">
+          <p set:html={fillHtml(i.a)} />
+        </div>
+      </details>
+    ))
+  }
+</div>

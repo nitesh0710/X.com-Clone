@@ -1,0 +1,239 @@
+---
+import '@/styles/tokens.css';
+import '@/styles/base.css';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import StickyBar from '@/components/StickyBar.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { config } from '@/config/site';
+import { organizationLd, breadcrumbLd, type Crumb } from '@/lib/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Path for the canonical URL. Defaults to the current path. */
+  path?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  jsonLd?: (Record<string, unknown> | null)[];
+  crumbs?: Crumb[];
+  noindex?: boolean;
+  stickyBar?: boolean;
+  /** Fires once on load: 'pricing_view' or 'demo_view'. */
+  pageEvent?: { name: 'pricing_view' | 'demo_view'; label?: string };
+  /** Extra origins to preconnect to (e.g. Cal.com on /book). */
+  preconnect?: string[];
+}
+
+const {
+  title,
+  description,
+  path = Astro.url.pathname,
+  ogImage = '/og/default.png',
+  ogType = 'website',
+  jsonLd = [],
+  crumbs,
+  noindex = false,
+  stickyBar = true,
+  pageEvent,
+  preconnect = [],
+} = Astro.props;
+
+const cleanPath = path === '/' ? '/' : path.replace(/\/$/, '').replace(/\.html$/, '');
+const canonical = new URL(cleanPath, config.siteUrl).toString().replace(/\/$/, '') || config.siteUrl;
+const canonicalHref = cleanPath === '/' ? config.siteUrl + '/' : canonical;
+const ogUrl = new URL(ogImage, config.siteUrl).toString();
+const ld = [organizationLd(), ...(crumbs ? [breadcrumbLd(crumbs)] : []), ...jsonLd].filter(Boolean);
+---
+
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalHref} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#f6f3ec" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" href="/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    {preconnect.map((o) => <link rel="preconnect" href={o} />)}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="Speed Agency" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalHref} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+
+    {ld.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+    <slot name="head" />
+  </head>
+  <body class:list={[{ 'has-sticky-bar': stickyBar }]} data-page-event={pageEvent?.name} data-page-label={pageEvent?.label}>
+    <a href="#main" class="skip">Skip to content</a>
+    <Header />
+    {crumbs && <Breadcrumbs crumbs={crumbs} />}
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    {stickyBar && <StickyBar />}
+    {
+      config.cfAnalyticsToken && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: config.cfAnalyticsToken })}
+        />
+      )
+    }
+    <script>
+      import { initClickTracking, captureUtm, track } from '@/lib/events';
+
+      captureUtm();
+      initClickTracking();
+
+      const pe = document.body.dataset.pageEvent;
+      if (pe === 'pricing_view' || pe === 'demo_view') track(pe, document.body.dataset.pageLabel ?? '');
+
+      // Header shrink on scroll
+      const header = document.getElementById('site-header');
+      const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // Services dropdown (desktop)
+      document.querySelectorAll<HTMLButtonElement>('[data-dropdown]').forEach((btn) => {
+        const menu = document.getElementById(btn.getAttribute('aria-controls') ?? '');
+        if (!menu) return;
+        const li = btn.parentElement!;
+        const set = (open: boolean) => {
+          btn.setAttribute('aria-expanded', String(open));
+          menu.hidden = !open;
+        };
+        btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
+            set(false);
+            btn.focus();
+          }
+        });
+        li.addEventListener('focusout', (e) => {
+          if (!li.contains(e.relatedTarget as Node | null)) set(false);
+        });
+        document.addEventListener('click', (e) => {
+          if (!li.contains(e.target as Node)) set(false);
+        });
+      });
+
+      // Mobile menu: native modal <dialog> (inert background, Esc closes) + explicit focus trap
+      const dialog = document.getElementById('mobile-menu') as HTMLDialogElement | null;
+      const opener = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+      if (dialog && opener) {
+        opener.addEventListener('click', () => {
+          dialog.showModal();
+          document.body.style.overflow = 'hidden';
+        });
+        dialog.querySelector('[data-menu-close]')?.addEventListener('click', () => dialog.close());
+        dialog.addEventListener('close', () => {
+          document.body.style.overflow = '';
+          opener.focus();
+        });
+        dialog.addEventListener('keydown', (e) => {
+          if (e.key !== 'Tab') return;
+          const f = dialog.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
+          const first = f[0];
+          const last = f[f.length - 1];
+          if (!first || !last) return;
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        });
+        matchMedia('(min-width: 1100px)').addEventListener('change', (m) => m.matches && dialog.open && dialog.close());
+      }
+
+      // Sticky mobile bar: appears once the hero has scrolled out; hides while a form field has focus
+      const bar = document.getElementById('sticky-bar');
+      if (bar) {
+        let past = false;
+        let typing = false;
+        const render = () => {
+          const show = past && !typing;
+          bar.classList.toggle('is-visible', show);
+          bar.setAttribute('aria-hidden', String(!show));
+          bar.querySelectorAll('a').forEach((a) => (show ? a.removeAttribute('tabindex') : a.setAttribute('tabindex', '-1')));
+        };
+        const hero = document.querySelector('[data-hero]');
+        if (hero && 'IntersectionObserver' in window) {
+          new IntersectionObserver(([entry]) => {
+            past = !entry!.isIntersecting && entry!.boundingClientRect.top < 0;
+            render();
+          }).observe(hero);
+        } else {
+          const check = () => {
+            const p = window.scrollY > 320;
+            if (p !== past) {
+              past = p;
+              render();
+            }
+          };
+          window.addEventListener('scroll', check, { passive: true });
+          check();
+        }
+        const isField = (t: EventTarget | null) => t instanceof HTMLElement && t.matches('input, select, textarea');
+        document.addEventListener('focusin', (e) => {
+          if (isField(e.target)) {
+            typing = true;
+            render();
+          }
+        });
+        document.addEventListener('focusout', (e) => {
+          if (isField(e.target)) {
+            typing = false;
+            render();
+          }
+        });
+      }
+
+      // Section entry: 8px rise + fade, once. CSS disables it under prefers-reduced-motion.
+      // Content is only hidden by the same script that reveals it, so a script failure never hides anything.
+      const reveals = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window && reveals.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const vh = window.innerHeight;
+        reveals.forEach((el) => el.getBoundingClientRect().top >= vh && el.classList.add('reveal-pending'));
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const en of entries) {
+              if (en.isIntersecting) {
+                en.target.classList.add('is-in');
+                en.target.classList.remove('reveal-pending');
+                io.unobserve(en.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -10% 0px' },
+        );
+        reveals.forEach((el) => io.observe(el));
+      } else {
+        reveals.forEach((el) => el.classList.add('is-in'));
+      }
+    </script>
+  </body>
+</html>

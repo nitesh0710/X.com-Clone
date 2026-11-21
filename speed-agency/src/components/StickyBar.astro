@@ -1,0 +1,18 @@
+---
+import Icon from './Icon.astro';
+import { optional, smsHref } from '@/config/site';
+const phone = optional.US_PHONE.trim();
+---
+
+<div class="sticky-bar" id="sticky-bar" data-loc="sticky_bar" aria-hidden="true">
+  <a href="/book" class="btn btn-primary" data-cta="sticky_book" tabindex="-1">
+    <Icon name="calendar" /> Book a call
+  </a>
+  {
+    phone && (
+      <a href={smsHref(phone)} class="btn btn-secondary" data-cta="sticky_text" tabindex="-1">
+        <Icon name="message" /> Text us
+      </a>
+    )
+  }
+</div>

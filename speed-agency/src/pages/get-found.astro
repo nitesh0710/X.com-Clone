@@ -1,0 +1,135 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PricePanel from '@/components/PricePanel.astro';
+import FaqList from '@/components/FaqList.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Icon from '@/components/Icon.astro';
+import F from '@/components/F.astro';
+import { serviceLd } from '@/lib/seo';
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Get found on Google', href: '/get-found' },
+];
+const lede =
+  "You've probably had calls promising “page 1 of Google.” This isn't that. It's the basic setup most trade businesses are missing, done properly once.";
+const steps = [
+  ['Check where you stand.', 'I look at your Google Business Profile, your main directory listings and your website, and note what’s missing or wrong.'],
+  ['Fix the profile.', 'Categories, service area, hours, services and photos, set up properly.'],
+  ['Match your details everywhere.', 'Same business name, address and phone number across the main directories.'],
+  ['Set up review requests.', 'A short link and message you can text to happy customers.'],
+  ['Hand over the summary.', 'A before-and-after summary of your listings, so you can see exactly what changed.'],
+];
+const faqs = [
+  {
+    q: 'How long until I see results?',
+    a: "Honestly, weeks to months. It depends on how many competitors you have nearby and how many reviews you collect. Some changes, like correct hours and categories, help straight away. Climbing the map results is slower, and anyone who promises a date is guessing.",
+  },
+  {
+    q: 'Do I need a website first?',
+    a: 'It helps a lot. Most customers check both. If you don’t have one, see [websites for trades](/websites).',
+  },
+  {
+    q: 'What if my Google profile was suspended or someone else controls it?',
+    a: "I'll help you go through Google's own reinstatement or ownership request process. Google makes the decision and sets the timing, so I can't promise the outcome, but I'll do the paperwork with you.",
+  },
+  {
+    q: 'Will you manage my profile every month?',
+    a: "This is a one-time setup. If you'd like ongoing help (posting photos, replying to reviews), ask on the call and I'll tell you whether it's worth it for your business.",
+  },
+];
+---
+
+<BaseLayout
+  title="Google Business Profile Setup for Contractors | Speed Agency"
+  description="Show up when locals search for your trade. Google Business Profile setup or clean-up, matching directory listings and a review link. One-time, fixed price."
+  crumbs={crumbs}
+  jsonLd={[serviceLd({ name: 'Google Business Profile setup for trade businesses', description: lede, path: '/get-found', priceKey: 'PRICE_GET_FOUND' })]}
+>
+  <PageHero label="Get found on Google" title="Show up when locals search for your trade." lede={lede}>
+    <div class="notice mt-6" style="max-width:60ch">
+      <p><strong>Already have a site from us?</strong> This is the next step. Don't have a website yet? Start with <a class="link" href="/websites">a website built for trades</a>, because most customers check both.</p>
+    </div>
+    <div class="actions" data-loc="hero">
+      <a href="/book" class="btn btn-primary" data-cta="getfound_hero_book">Book a free call</a>
+      <a href="/contact?topic=review" class="text-link" data-cta="getfound_hero_review">Get a free video review first <Icon name="arrow-right" /></a>
+    </div>
+  </PageHero>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-6">
+        <SectionHead num="01" label="Who it's for" />
+        <p class="lede">Trade businesses that have a website (or are getting one) and want to show up on Google Maps when people nearby search for their trade.</p>
+      </div>
+      <div class="col-6">
+        <SectionHead num="02" label="The problem" />
+        <p class="lede">The top three results on the map get most of the calls. A half-finished profile, the wrong categories or a phone number that doesn't match your website all make Google less confident about showing you.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid">
+      <div class="col-7">
+        <SectionHead num="03" label="What I do" />
+        <ul class="checklist" role="list">
+          <li><Icon name="check" /><span>Create or clean up your Google Business Profile: categories, service area, hours, services and photos</span></li>
+          <li><Icon name="check" /><span>Make your name, address and phone match across the main directories: <F k="DIRECTORY_LIST" /></span></li>
+          <li><Icon name="check" /><span>Set up a short review-request link and a message you can text to customers</span></li>
+          <li><Icon name="check" /><span>Make sure your website and your profile point to each other</span></li>
+        </ul>
+        <SectionHead num="04" label="What you get" />
+        <p class="lede">A before-and-after summary of your listings, so you can see every change I made.</p>
+      </div>
+      <div class="col-5">
+        <SectionHead num="05" label="What I don't do" />
+        <ul class="checklist no" role="list">
+          <li><Icon name="x" /><span>Buy reviews</span></li>
+          <li><Icon name="x" /><span>Write fake reviews</span></li>
+          <li><Icon name="x" /><span>Promise rankings</span></li>
+        </ul>
+        <p class="muted mt-4">Not included: paid ads management, ongoing posting, and review replies. Ask if you'd like a quote for these.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap">
+      <SectionHead num="06" label="Process" />
+      <h2 class="sec-title wide">Done properly once, then handed over.</h2>
+      <ol class="steps timeline mt-7" role="list">
+        {steps.map(([t, d]) => <li><h3 class="h3">{t}</h3><p class="muted">{d}</p></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid">
+      <div class="col-7">
+        <SectionHead num="07" label="Example" />
+        <h2 class="sec-title">What the before-and-after summary covers.</h2>
+        <p>For each listing: what it said before, what it says now, and anything you need to do (like verifying a postcard from Google). Plus your review link, ready to text to customers.</p>
+        <p class="muted mt-4">I don't have a real client summary to show yet, and I won't invent one. I'm happy to walk you through a blank template on the call.</p>
+      </div>
+      <div class="col-5">
+        <SectionHead num="08" label="Price" />
+        <PricePanel label="Get found (one-time)" priceKey="PRICE_GET_FOUND" button={{ href: '/book', text: 'Book a free call', cta: 'getfound_price_book' }} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-5">
+        <SectionHead num="09" label="FAQs" />
+        <h2 class="sec-title">Questions about Google.</h2>
+      </div>
+      <div class="col-7"><FaqList items={faqs} /></div>
+    </div>
+  </section>
+
+  <CtaBand title="Want to show up when locals search?" copy="Book a free 15-minute call. I'll look at your current listings and tell you plainly what's worth fixing." cta="getfound_final_book" />
+</BaseLayout>

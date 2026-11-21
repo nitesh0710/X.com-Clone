@@ -1,0 +1,14 @@
+---
+import { gates } from '@/config/site';
+---
+
+{
+  !gates.LEGAL_PAGES_REVIEWED && (
+    <div class="notice mt-6" role="note">
+      <p>
+        <strong>Draft — must be reviewed by a qualified professional before launch.</strong>{' '}
+        <mark class="ph">{'{{LEGAL_PAGES_REVIEWED}}'}</mark>
+      </p>
+    </div>
+  )
+}

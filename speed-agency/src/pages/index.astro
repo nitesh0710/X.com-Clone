@@ -1,0 +1,327 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PricePanel from '@/components/PricePanel.astro';
+import DemoCard from '@/components/DemoCard.astro';
+import ProcessSteps from '@/components/ProcessSteps.astro';
+import FaqList from '@/components/FaqList.astro';
+import FounderCard from '@/components/FounderCard.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Testimonials from '@/components/Testimonials.astro';
+import Icon from '@/components/Icon.astro';
+import F from '@/components/F.astro';
+import { faq } from '@/content/faq/faq';
+import { websiteLd } from '@/lib/seo';
+import { facts, hasFact } from '@/config/site';
+import { included } from '@/lib/offer';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const plumber = work.find((w) => w.id === 'plumber-concept')!;
+const featured = ['plumber-concept', 'electrician-concept', 'roofer-concept']
+  .map((id) => work.find((w) => w.id === id))
+  .filter((w): w is NonNullable<typeof w> => Boolean(w));
+const homeFaq = faq.filter((f) => f.home);
+
+const problems = [
+  {
+    p: "No website, or one that's broken on phones",
+    cost: 'Customers pick the competitor who looks established',
+    fix: 'A clean, mobile-first site',
+    href: '/websites',
+  },
+  {
+    p: 'Hard to find on Google Maps',
+    cost: 'Calls go to whoever shows up in the top three',
+    fix: 'Google profile and local setup',
+    href: '/get-found',
+  },
+  {
+    p: "Missed calls while you're on a job",
+    cost: 'The customer calls the next number on the list',
+    fix: 'Missed-call text-back',
+    href: '/automation',
+  },
+];
+
+const why = [
+  ['Trades only.', 'I build one kind of site, for one kind of business, and I know what your customers look for.'],
+  ['Price before work.', "You see the full price and what's included before you pay anything."],
+  ['You see it first.', 'You approve the preview before the balance is due.'],
+  ['No lock-in.', 'You own your domain and content. Leave whenever you like.'],
+];
+---
+
+<BaseLayout
+  title="Speed Agency | Websites for Trade Businesses That Get Calls"
+  description="Simple, fast websites for plumbers, electricians, HVAC techs, roofers and other trades. Live in about a week at a fixed price, built to turn searches to calls."
+  path="/"
+  jsonLd={[websiteLd()]}
+>
+  <!-- 4.2 Hero -->
+  <section class="wrap hero" data-hero data-loc="hero">
+    <div class="grid">
+      <div class="col-7 hero-copy">
+        <p class="label muted">Websites for trade businesses</p>
+        <h1>Websites that make the phone ring.</h1>
+        <p class="lede">
+          I build simple, fast websites for plumbers, electricians, HVAC techs, roofers and other trades. Your site is live
+          in about a week, at a fixed price, and built to turn local searches into calls and quote requests.
+        </p>
+        <div class="hero-actions">
+          <a href="/book" class="btn btn-primary" data-cta="hero_book">Book a free 15-minute call</a>
+          <a href="/contact?topic=review" class="text-link" data-cta="hero_review">
+            Or get a free 2-minute video review of your online presence <Icon name="arrow-right" />
+          </a>
+        </div>
+        <p class="small muted reassure">
+          Fixed price up front · No long-term contract · You talk to the person building it
+        </p>
+      </div>
+      <div class="col-5 hero-visual">
+        <div class="phone-wrap">
+          <div class="phone">
+            <Image
+              src={plumber.data.screenshotMobile}
+              alt="Concept plumbing website on a phone, with an emergency banner and a large tap-to-call button."
+              width={260}
+              loading="eager"
+            />
+          </div>
+          <span class="badge hero-badge">Concept project</span>
+        </div>
+        <FounderCard />
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.3 Problem -->
+  <section class="section alt reveal">
+    <div class="wrap">
+      <SectionHead num="01" label="Why this matters" />
+      <div class="grid">
+        <div class="col-5">
+          <h2 class="sec-title">Most people check you out online before they call.</h2>
+        </div>
+        <div class="col-7">
+          <p class="lede">
+            When someone's water heater dies, they search, compare two or three names and call the one that looks real. If
+            you only have a Google listing (or a site that doesn't work on a phone), you lose that job to someone who
+            doesn't.
+          </p>
+        </div>
+      </div>
+      <table class="table mt-7">
+        <caption class="sr-only">Common problems, what they cost you and what fixes them</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="label">Problem</th>
+            <th scope="col" class="label">What it costs you</th>
+            <th scope="col" class="label">What fixes it</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            problems.map((r) => (
+              <tr>
+                <th scope="row" data-label="Problem" style="font-weight:600">
+                  {r.p}
+                </th>
+                <td data-label="What it costs you">{r.cost}</td>
+                <td data-label="What fixes it">
+                  <a href={r.href} class="text-link">
+                    {r.fix} <Icon name="arrow-right" />
+                  </a>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 4.4 Offer -->
+  <section class="section reveal">
+    <div class="wrap">
+      <SectionHead num="02" label="What you get" />
+      <div class="grid">
+        <div class="col-7">
+          <h2 class="sec-title">One website, built to get you calls.</h2>
+          <ul class="checklist" role="list">
+            {
+              included.map((i) => (
+                <li>
+                  <Icon name="check" />
+                  <span>{i}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="col-5">
+          <PricePanel
+            label="Starter website"
+            priceKey="PRICE_STARTER"
+            button={{ href: '/pricing', text: 'See full pricing', cta: 'offer_pricing', variant: 'secondary' }}
+          >
+            <p slot="note" class="muted">plus <F k="PRICE_CARE_MONTHLY" />/month hosting and care (optional)</p>
+          </PricePanel>
+          <a href="/book" class="btn btn-primary btn-block mt-4" data-cta="offer_book">Book a free call for your quote</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.5 Concept work -->
+  <section class="section alt reveal">
+    <div class="wrap">
+      <SectionHead num="03" label="See the kind of site you'd get" />
+      <h2 class="sec-title">What a trade website should look like.</h2>
+      <p class="lede">
+        These are concept sites I built to show the approach. They are demonstrations, not paid client work.
+      </p>
+      <div class="work-grid asym mt-7">
+        {featured.map((w) => <DemoCard entry={w} />)}
+      </div>
+      <div class="actions">
+        <a href="/work" class="text-link" data-cta="work_all">See all concept projects <Icon name="arrow-right" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.6 How it works -->
+  <section class="section reveal">
+    <div class="wrap">
+      <SectionHead num="04" label="How it works" />
+      <h2 class="sec-title wide">From first call to live site in about a week.</h2>
+      <div class="mt-7"><ProcessSteps /></div>
+      <div class="actions">
+        <a href="/book" class="btn btn-primary" data-cta="process_book">Book the free call</a>
+        <a href="/process" class="text-link">The full process <Icon name="arrow-right" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.7 Why me -->
+  <section class="section alt reveal">
+    <div class="wrap">
+      <SectionHead num="05" label="Why Speed Agency" />
+      <div class="grid">
+        <div class="col-7">
+          <h2 class="sec-title">Straight answers, fixed prices, one person accountable.</h2>
+          <ul class="ruled" role="list">
+            {
+              why.map(([t, d]) => (
+                <li>
+                  <strong>{t}</strong> {d}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="col-5">
+          <div class="panel stack">
+            {
+              hasFact('FOUNDER_PHOTO') ? (
+                <img src={facts.FOUNDER_PHOTO} alt={hasFact('FOUNDER_NAME') ? facts.FOUNDER_NAME : 'Founder'} width="320" height="320" loading="lazy" style="width:100%;max-width:320px;aspect-ratio:1;object-fit:cover" />
+              ) : (
+                <div class="photo-ph" style="width:100%;max-width:320px;aspect-ratio:1;font-size:14px" role="img" aria-label="Founder photo placeholder">
+                  {'{{FOUNDER_PHOTO}}'}
+                </div>
+              )
+            }
+            <p class="h3"><F k="FOUNDER_NAME" /></p>
+            <p><F k="FOUNDER_BIO_SHORT" /></p>
+            <a href="/about" class="text-link">More about me <Icon name="arrow-right" /></a>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <a href="/book" class="btn btn-primary" data-cta="why_book">Talk to me directly: book a call</a>
+      </div>
+    </div>
+  </section>
+
+  <Testimonials />
+
+  <!-- 4.8 FAQ -->
+  <section class="section reveal">
+    <div class="wrap">
+      <SectionHead label="Questions" />
+      <div class="grid">
+        <div class="col-5">
+          <h2 class="sec-title">Common questions.</h2>
+          <a href="/faq" class="text-link">All questions <Icon name="arrow-right" /></a>
+        </div>
+        <div class="col-7">
+          <FaqList items={homeFaq} />
+          <div class="actions">
+            <a href="/book" class="btn btn-secondary" data-cta="faq_book">Still unsure? Ask me on a free call</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.9 Final CTA -->
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-block: var(--s-6) var(--s-8);
+  }
+  .hero-copy .label {
+    margin-bottom: var(--s-3);
+  }
+  .hero-copy .lede {
+    margin-top: var(--s-4);
+    font-size: var(--body);
+  }
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-2);
+    margin-top: var(--s-5);
+  }
+  .reassure {
+    margin-top: var(--s-4);
+  }
+  .hero-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-5);
+  }
+  .phone-wrap {
+    position: relative;
+  }
+  .hero-badge {
+    position: absolute;
+    top: -14px;
+    left: 16px;
+  }
+  @media (min-width: 768px) {
+    .hero-copy .lede {
+      font-size: calc(var(--body) + 2px);
+    }
+  }
+  @media (min-width: 1100px) {
+    .hero {
+      padding-block: var(--s-9) var(--s-9);
+    }
+    .hero-copy {
+      padding-top: var(--s-5);
+    }
+    .hero-actions {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--s-3) var(--s-5);
+      margin-top: var(--s-6);
+    }
+  }
+</style>

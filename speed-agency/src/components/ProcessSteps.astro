@@ -1,0 +1,27 @@
+---
+interface Props {
+  timeline?: boolean;
+}
+const { timeline = true } = Astro.props;
+const steps = [
+  {
+    t: 'Free call (15 min).',
+    d: "We talk about your business, your area and the jobs you want more of. You get a fixed quote within one business day.",
+  },
+  { t: 'Content call (20 min).', d: 'I ask the questions, then write your copy. You send photos and your logo if you have them.' },
+  { t: 'Build (about 5 working days).', d: 'You get a preview link and one round of changes.' },
+  { t: 'Launch.', d: 'I connect your domain, set up Google, and test the call button and the form with you.' },
+  { t: 'After launch.', d: "Optional care plan, with Google profile and missed-call follow-up when you're ready." },
+];
+---
+
+<ol class:list={['steps', { timeline }]} role="list">
+  {
+    steps.map((s) => (
+      <li>
+        <h3 class="h3">{s.t}</h3>
+        <p class="muted">{s.d}</p>
+      </li>
+    ))
+  }
+</ol>

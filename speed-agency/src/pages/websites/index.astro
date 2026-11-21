@@ -1,0 +1,164 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PricePanel from '@/components/PricePanel.astro';
+import DemoCard from '@/components/DemoCard.astro';
+import ProcessSteps from '@/components/ProcessSteps.astro';
+import FaqList from '@/components/FaqList.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Icon from '@/components/Icon.astro';
+import { included, excluded, starterItems, growthItems } from '@/lib/offer';
+import { serviceLd } from '@/lib/seo';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const examples = work.filter((w) => ['plumber-concept', 'roofer-concept'].includes(w.id));
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Websites for trades', href: '/websites' },
+];
+const faqs = [
+  {
+    q: 'Can I edit it myself?',
+    a: "Yes. For small text changes, I'll show you how in a short video. Most owners would rather not, which is what the care plan is for: send me a text or email and I make the change.",
+  },
+  {
+    q: 'What if I already have a domain?',
+    a: "Good, we'll use it. You keep it in your own account and I connect the new site to it at launch. If you don't have one, I'll help you buy one in your name.",
+  },
+  {
+    q: 'Do you use templates?',
+    a: "I use a proven structure for trade sites, then write and design it for your business. You won't look like a copy of your competitor.",
+  },
+  {
+    q: 'What do you need from me?',
+    a: 'Your business name and services, the towns you cover, your phone number and email, and 20 minutes for a content call. A logo and 5–10 job photos help but are optional. See [how it works](/process).',
+  },
+];
+const description = 'Fast, simple and written to get calls. Live in about a week, at a fixed price.';
+---
+
+<BaseLayout
+  title="Website Design for Contractors & Trades | Speed Agency"
+  description="A website built for trade businesses: fast on phones, written for you, with tap-to-call and a quote form. Live in about a week, at a fixed price, no contract."
+  crumbs={crumbs}
+  jsonLd={[serviceLd({ name: 'Websites for trade businesses', description, path: '/websites', priceKey: 'PRICE_STARTER' })]}
+>
+  <PageHero label="Websites for trades" title="A website built for trade businesses." lede={description}>
+    <div class="actions" data-loc="hero">
+      <a href="/book" class="btn btn-primary" data-cta="websites_hero_book">Book a free call to get your quote</a>
+      <a href="/pricing" class="text-link">See pricing <Icon name="arrow-right" /></a>
+    </div>
+  </PageHero>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-6">
+        <SectionHead num="01" label="Who it's for" />
+        <p class="lede">Owners with no website, a site that's broken on phones, or a page that hasn't been touched in years.</p>
+      </div>
+      <div class="col-6">
+        <SectionHead num="02" label="The problem" />
+        <p class="lede">
+          Customers look you up before they call. If they can't find you, or what they find looks unfinished, they call
+          someone else. You never hear about the jobs you lost.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead num="03" label="What I do" />
+      <div class="grid">
+        <div class="col-5"><h2 class="sec-title">Planned around how your customers search.</h2></div>
+        <div class="col-7">
+          <p class="lede">
+            I plan the pages around how your customers search (service + town), write the copy for you, build the site, and
+            connect it to Google.
+          </p>
+          <p class="mt-4 muted">
+            Building for a specific trade? See <a class="link" href="/websites/plumbers">plumbers</a>,
+            <a class="link" href="/websites/electricians">electricians</a>, <a class="link" href="/websites/hvac">HVAC</a>,
+            <a class="link" href="/websites/roofers">roofers</a> and <a class="link" href="/websites/painters">painters</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-7">
+        <SectionHead num="04" label="What you get" />
+        <ul class="checklist" role="list">
+          {
+            [...included, 'A launch checklist, so we test everything together before you go live', 'A 30-day fix window for anything that isn’t working'].map((i) => (
+              <li>
+                <Icon name="check" />
+                <span>{i}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="col-5">
+        <SectionHead num="05" label="Not included" />
+        <p class="muted">Unless it's in your quote:</p>
+        <ul class="checklist no mt-4" role="list">
+          {
+            excluded.map((i) => (
+              <li>
+                <Icon name="x" />
+                <span>{i}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead num="06" label="Process" />
+      <h2 class="sec-title wide">From first call to live site in about a week.</h2>
+      <div class="mt-7"><ProcessSteps /></div>
+      <div class="actions"><a href="/process" class="text-link">The full process <Icon name="arrow-right" /></a></div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap">
+      <SectionHead num="07" label="Example" />
+      <h2 class="sec-title">Concept projects.</h2>
+      <p class="muted">Demonstrations I built to show the approach, not paid client work.</p>
+      <div class="work-grid two mt-6">{examples.map((w) => <DemoCard entry={w} />)}</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <SectionHead num="08" label="Price" />
+      <h2 class="sec-title">Fixed price, agreed before any work starts.</h2>
+      <div class="price-row mt-6">
+        <PricePanel label="Starter website" priceKey="PRICE_STARTER" items={starterItems} note="No website, or one that's broken." button={{ href: '/book', text: 'Get your fixed quote', cta: 'websites_price_starter' }} />
+        <PricePanel label="Growth website" priceKey="PRICE_GROWTH" items={growthItems} note="Several services or towns you want to rank for." button={{ href: '/book', text: 'Get your fixed quote', cta: 'websites_price_growth' }} />
+      </div>
+      <p class="mt-5 muted">All prices in USD. <a href="/pricing" class="link">Full pricing, care plan and add-ons</a>.</p>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap grid">
+      <div class="col-5">
+        <SectionHead num="09" label="FAQs" />
+        <h2 class="sec-title">Questions about the website.</h2>
+      </div>
+      <div class="col-7"><FaqList items={faqs} /></div>
+    </div>
+  </section>
+
+  <CtaBand title="Book a free call to get your quote." button="Book a free call" cta="websites_final_book" />
+</BaseLayout>

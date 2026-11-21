@@ -1,0 +1,116 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import CtaBand from '@/components/CtaBand.astro';
+import Icon from '@/components/Icon.astro';
+
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'How it works', href: '/process' },
+];
+const steps = [
+  {
+    t: 'Free call',
+    time: '15 minutes',
+    you: 'Tell me about your business, your area and the jobs you want more of.',
+    me: "Ask questions, look at how you show up online today, and tell you honestly whether a website will help.",
+    get: 'A fixed quote within one business day. No obligation.',
+  },
+  {
+    t: 'Content call',
+    time: '20 minutes, plus a few days for you to send photos',
+    you: 'Answer my questions about your services and customers. Send your logo and job photos if you have them.',
+    me: 'Write all the copy for your site from what you tell me.',
+    get: "Copy written in your voice. You don't have to write anything.",
+  },
+  {
+    t: 'Build',
+    time: 'About 5 working days',
+    you: 'Look at the preview link and send me your changes in one list.',
+    me: 'Build the site, then make one round of changes (two on the Growth package).',
+    get: 'A private preview link that works on your phone.',
+  },
+  {
+    t: 'Launch',
+    time: 'Usually 1 day',
+    you: 'Approve the preview and pay the balance. Join a short call to test things together.',
+    me: 'Connect your domain, set up Google, and test the call button and the form with you.',
+    get: 'A live site, a launch checklist, and 30 days to report anything that isn’t working.',
+  },
+  {
+    t: 'After launch',
+    time: 'Ongoing, optional',
+    you: "Decide whether you want me to look after the site, or take it over yourself.",
+    me: "Either run the care plan, or hand everything over with a short guide. Add Google profile setup or missed-call text-back when you're ready.",
+    get: 'A site that keeps working, without you having to think about it.',
+  },
+];
+const needs = [
+  'Business name and services',
+  'The towns you cover',
+  'Your phone number and email',
+  'Your logo (optional)',
+  '5–10 job photos (optional, since tasteful placeholders are fine at launch)',
+];
+---
+
+<BaseLayout
+  title="How It Works: From First Call to Live Site | Speed Agency"
+  description="How a Speed Agency website gets built, step by step: what you do, what I do, what you get and how long each step takes. Live about a week after content."
+  crumbs={crumbs}
+>
+  <PageHero label="How it works" title="How it works, step by step." lede="Five steps from first call to a live site. Here's exactly who does what, and how long it takes." />
+
+  <section class="section alt">
+    <div class="wrap">
+      <ol class="steps" role="list">
+        {
+          steps.map((s) => (
+            <li>
+              <h2 class="h3">{s.t}</h2>
+              <p class="small muted" style="display:flex;gap:6px;align-items:center"><Icon name="clock" /> {s.time}</p>
+              <dl class="step-dl">
+                <div><dt class="label muted">What you do</dt><dd>{s.you}</dd></div>
+                <div><dt class="label muted">What I do</dt><dd>{s.me}</dd></div>
+                <div><dt class="label muted">What you get</dt><dd>{s.get}</dd></div>
+              </dl>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid">
+      <div class="col-5">
+        <SectionHead label="What I need from you" />
+        <h2 class="sec-title">Not much.</h2>
+      </div>
+      <div class="col-7">
+        <ul class="checklist" role="list">{needs.map((n) => <li><Icon name="check" /><span>{n}</span></li>)}</ul>
+        <p class="lede mt-6">The timeline starts once I have your content. If you're slow to send things, I'll nudge you, not charge you.</p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Ready for step one?" copy="Book a free 15-minute call. You'll get a fixed quote within one business day." button="Book the free call" cta="process_final_book" />
+</BaseLayout>
+
+<style>
+  .step-dl {
+    display: grid;
+    gap: var(--s-4);
+    margin-top: var(--s-4);
+  }
+  .step-dl dd {
+    margin: 4px 0 0;
+  }
+  @media (min-width: 1100px) {
+    .step-dl {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gutter);
+    }
+  }
+</style>

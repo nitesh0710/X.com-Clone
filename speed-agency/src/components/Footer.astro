@@ -1,0 +1,89 @@
+---
+import F from './F.astro';
+import { optional, facts, hasFact, telHref, year } from '@/config/site';
+import { services } from '@/lib/nav';
+const phone = optional.US_PHONE.trim();
+const socials = Object.entries(optional.SOCIAL).filter(([, url]) => url);
+const socialName: Record<string, string> = { linkedin: 'LinkedIn', facebook: 'Facebook', instagram: 'Instagram' };
+---
+
+<footer class="site-footer" data-loc="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="stack">
+        <a href="/" class="logo"><span class="logo-mark" aria-hidden="true"></span>Speed Agency</a>
+        <p class="muted">
+          Speed Agency is a small web studio that builds websites for plumbers, electricians, HVAC techs, roofers and
+          other trade businesses. Every site is built to do one job: turn a local search into a phone call or a quote
+          request. You deal directly with the founder from first call to launch.
+        </p>
+        <p class="muted"><F k="LOCATION_STATEMENT" /></p>
+      </div>
+      <div>
+        <h2>Services</h2>
+        <ul>
+          {services.map((s) => <li><a href={s.href}>{s.label}</a></li>)}
+          <li><a href="/websites/plumbers">Websites for plumbers</a></li>
+          <li><a href="/websites/electricians">Websites for electricians</a></li>
+          <li><a href="/websites/hvac">Websites for HVAC</a></li>
+          <li><a href="/websites/roofers">Websites for roofers</a></li>
+          <li><a href="/websites/painters">Websites for painters</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Company</h2>
+        <ul>
+          <li><a href="/work">Work</a></li>
+          <li><a href="/pricing">Pricing</a></li>
+          <li><a href="/process">Process</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/faq">FAQ</a></li>
+          <li><a href="/insights">Insights</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Contact</h2>
+        <ul>
+          <li>
+            {
+              hasFact('CONTACT_EMAIL') ? (
+                <a href={`mailto:${facts.CONTACT_EMAIL}`} data-cta="footer_email">
+                  {facts.CONTACT_EMAIL}
+                </a>
+              ) : (
+                <F k="CONTACT_EMAIL" />
+              )
+            }
+          </li>
+          {
+            phone && (
+              <li>
+                <a href={telHref(phone)} data-cta="footer_call">
+                  {phone}
+                </a>
+              </li>
+            )
+          }
+          <li><a href="/contact">Contact form</a></li>
+          <li><a href="/book">Book a free call</a></li>
+          {
+            socials.map(([k, url]) => (
+              <li>
+                <a href={url} rel="me noopener" target="_blank">
+                  {socialName[k] ?? k}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/cookies">Cookies</a>
+      <span style="padding-block:12px">© {year} Speed Agency</span>
+      {optional.LEGAL_ENTITY_DISCLOSURE && <span style="padding-block:12px">{optional.LEGAL_ENTITY_DISCLOSURE}</span>}
+    </div>
+  </div>
+</footer>

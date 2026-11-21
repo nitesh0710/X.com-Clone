@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/PageHero.astro';
+import DemoCard from '@/components/DemoCard.astro';
+import CtaBand from '@/components/CtaBand.astro';
+
+const work = (await getCollection('work')).sort((a, b) => a.data.order - b.data.order);
+const crumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Work', href: '/work' },
+];
+---
+
+<BaseLayout
+  title="Concept Projects: Example Trade Websites | Speed Agency"
+  description="Concept websites for plumbers, electricians and roofers that show what your site could look like. Each one is labelled as a demonstration, not paid client work."
+  crumbs={crumbs}
+>
+  <PageHero
+    label="Work"
+    title="Concept projects."
+    lede="I build concept sites for common trades to show what your site could look like. Each is labelled as a demonstration. None is presented as paid client work. Real client projects will appear here, with permission, as they launch."
+  />
+  <section class="section alt">
+    <div class="wrap">
+      <div class="work-grid two">{work.map((w) => <DemoCard entry={w} headingLevel="h2" />)}</div>
+    </div>
+  </section>
+  <CtaBand title="Want one like this for your business?" cta="work_final_book" />
+</BaseLayout>

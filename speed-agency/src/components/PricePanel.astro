@@ -1,0 +1,44 @@
+---
+import F from './F.astro';
+import Icon from './Icon.astro';
+import type { FactKey } from '@/config/site';
+interface Props {
+  label: string;
+  priceKey: FactKey;
+  from?: boolean;
+  suffix?: string;
+  note?: string;
+  items?: string[];
+  button?: { href: string; text: string; cta: string; variant?: 'primary' | 'secondary' };
+}
+const { label, priceKey, from = true, suffix, note, items = [], button } = Astro.props;
+---
+
+<div class="price-panel">
+  <p class="label"><span>{label}</span><span class="tick" aria-hidden="true"></span></p>
+  <p class="price">
+    {from && <span class="from">From</span>}
+    <F k={priceKey} />{suffix && <span style="font-size:0.5em">{suffix}</span>}
+  </p>
+  {note && <p class="muted small">{note}</p>}
+  <slot name="note" />
+  {
+    items.length > 0 && (
+      <ul class="checklist" role="list">
+        {items.map((i) => (
+          <li>
+            <Icon name="check" />
+            <span>{i}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  {
+    button && (
+      <a href={button.href} class:list={['btn', button.variant === 'secondary' ? 'btn-secondary' : 'btn-primary']} data-cta={button.cta}>
+        {button.text}
+      </a>
+    )
+  }
+</div>

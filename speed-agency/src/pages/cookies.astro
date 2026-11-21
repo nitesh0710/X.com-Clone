@@ -1,0 +1,40 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LegalDraftNote from '@/components/LegalDraftNote.astro';
+import F from '@/components/F.astro';
+const updated = 'November 21, 2026';
+---
+
+<BaseLayout
+  title="Cookie Policy | Speed Agency Websites for Trade Businesses"
+  description="This site uses no tracking or advertising cookies. Here are the few strictly necessary cookies that spam protection and the booking calendar may set, and why."
+>
+  <section class="page-hero wrap" data-hero>
+    <span class="label">Legal</span>
+    <h1>Cookie policy</h1>
+    <p class="muted mt-4">Last updated {updated}</p>
+    <LegalDraftNote />
+  </section>
+  <section class="section alt" style="padding-top:var(--s-7)">
+    <div class="wrap prose" style="max-width:68ch">
+      <h2>The short version</h2>
+      <p>This site doesn't use tracking or advertising cookies, so there's no cookie banner.</p>
+
+      <h2>Analytics without cookies</h2>
+      <p>Visits are counted with Cloudflare Web Analytics, which doesn't use cookies or identify you. Button clicks and form starts are recorded by the site itself, again without cookies. If you arrive from a campaign link, the campaign code is kept in your browser's session storage until you close the tab, and only sent to me if you submit a form.</p>
+
+      <h2>Strictly necessary cookies</h2>
+      <ul>
+        <li><strong>Cloudflare Turnstile</strong> (on pages with a form) may set cookies needed to tell people from bots. They're used only for spam protection.</li>
+        <li><strong>Cloudflare</strong> may set a security cookie to protect the site from attacks.</li>
+        <li><strong>Cal.com</strong> may set cookies needed for the booking calendar to work when it loads on the booking page.</li>
+      </ul>
+
+      <h2>If this changes</h2>
+      <p>If I ever add tools that use tracking cookies (such as Google Analytics, advertising pixels or chat widgets), I'll add a consent tool first so nothing loads until you agree, and I'll update this page.</p>
+
+      <h2>Contact</h2>
+      <p>Questions: <F k="CONTACT_EMAIL" />.</p>
+    </div>
+  </section>
+</BaseLayout>

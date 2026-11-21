@@ -1,0 +1,11 @@
+---
+interface Props {
+  num?: string;
+  label: string;
+}
+const { num, label } = Astro.props;
+---
+
+<div class="sec-head">
+  <span class="label">{num ? `${num} — ${label}` : label}</span>
+</div>
