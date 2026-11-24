@@ -6,14 +6,12 @@ pages_build_output_dir = "./dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "speed-agency"
-# Replace with the id printed by `wrangler d1 create speed-agency`.
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "8dbc712a-39e1-4bfe-bfbe-9302dd37c8ec"
 migrations_dir = "migrations"
 
 # Preview deployments use a separate database.
 [[env.preview.d1_databases]]
 binding = "DB"
 database_name = "speed-agency-preview"
-# Replace with the id printed by `wrangler d1 create speed-agency-preview`.
-database_id = "00000000-0000-0000-0000-000000000001"
+database_id = "2e713ab2-964c-4167-8e14-9c10d8256544"
 migrations_dir = "migrations"

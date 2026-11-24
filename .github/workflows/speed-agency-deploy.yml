@@ -1,0 +1,58 @@
+name: Speed Agency deploy
+
+# main            → production (strict build: fails while any {{PLACEHOLDER}} remains)
+# any other branch → preview at https://staging.speed-agency.pages.dev (noindex)
+#
+# Needs the repository secret CLOUDFLARE_API_TOKEN (Pages Edit + D1 Edit).
+on:
+  push:
+    paths: ['speed-agency/**', '.github/workflows/speed-agency-deploy.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: speed-agency-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CLOUDFLARE_ACCOUNT_ID: 6b7c1a18fb4d08e402278a1c39fab608
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # The repository root package.json is not valid JSON, and Wrangler's
+      # Functions bundler reads parent folders, so build from a copy outside the checkout.
+      - name: Copy site out of the repository tree
+        run: cp -r speed-agency "$RUNNER_TEMP/site"
+      - name: Install
+        working-directory: ${{ runner.temp }}/site
+        run: npm ci
+      - name: Build
+        working-directory: ${{ runner.temp }}/site
+        env:
+          STRICT_PLACEHOLDERS: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
+        run: npm run build
+      - name: Apply D1 migrations
+        working-directory: ${{ runner.temp }}/site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            npx wrangler d1 migrations apply speed-agency --remote
+          else
+            npx wrangler d1 migrations apply speed-agency-preview --remote --env preview
+          fi
+      - name: Deploy to Cloudflare Pages
+        working-directory: ${{ runner.temp }}/site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          BRANCH=$([ "${{ github.ref }}" = "refs/heads/main" ] && echo main || echo staging)
+          npx wrangler pages deploy dist --project-name speed-agency --branch "$BRANCH" --commit-hash "${{ github.sha }}" --commit-dirty=true
